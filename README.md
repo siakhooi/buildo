@@ -6,6 +6,9 @@ power toys for builder.
 - `apt install <path/to/buildo-xxx.deb>`
 
 ## Binaries
+### Config
+- `buildo-config`
+- `buildo-config-{edit,set}`
 
 ## functions
 
@@ -14,4 +17,4 @@ power toys for builder.
 ## Environment Variables
 
 ## Dependencies
-
+- yq

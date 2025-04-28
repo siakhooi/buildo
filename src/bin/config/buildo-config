@@ -1,0 +1,17 @@
+#!/bin/bash
+
+readonly config_file=$BUILDO_HOME/config.yaml
+
+if [[ $# -ne 0 ]] && [[ $# -ne 1 ]]; then
+  echo.info "Usage: $(basename "$0") [yamlPath]"
+  exit 0
+fi
+
+if [[ -f $config_file ]]; then
+  if [[ $# -eq 0 ]]; then
+    yq "$config_file"
+  elif [[ $# -eq 1 ]]; then
+    readonly yaml_path=$1
+    yq "$yaml_path"' // ""' "$config_file"
+  fi
+fi
