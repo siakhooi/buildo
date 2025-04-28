@@ -1,0 +1,5 @@
+#!/bin/bash
+
+readonly COMPONENT_NAME=buildo
+
+apt show "$COMPONENT_NAME" 2>/dev/null | grep 'Version:' | sed 's/Version: //'

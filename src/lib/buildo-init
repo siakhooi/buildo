@@ -1,0 +1,5 @@
+#!/bin/bash
+
+readonly BUILDO_HOME=$HOME/.buildo
+
+export BUILDO_HOME
