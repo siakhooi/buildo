@@ -10,6 +10,9 @@ power toys for builder.
 - `buildo-config`
 - `buildo-config-{edit,set}`
 
+### pip
+- `pip-{purge,upgrade}-all`
+- 
 ## functions
 
 ## Aliases

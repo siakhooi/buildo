@@ -1,0 +1,5 @@
+#!/bin/bash
+
+pip --disable-pip-version-check list --outdated --format=json |
+  jq -r .[].name |
+  xargs --no-run-if-empty --max-args=1 pip install -U

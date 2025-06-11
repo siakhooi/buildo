@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pip freeze | xargs --no-run-if-empty --max-args=1 pip uninstall -y
