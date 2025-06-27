@@ -1,0 +1,24 @@
+#!/bin/bash
+
+readarray -t images < <(buildo-docker-build-list)
+
+(
+  found=()
+  while read -r lines; do
+    IFS=',' read -r name tag id size created_since < <(echo "$lines" | jq -r '[.Repository, .Tag, .ID, .Size, .CreatedSince] | join(",")')
+    for img in "${images[@]}"; do
+      if [[ "$img" == "$name" ]]; then
+        found+=("$name")
+        echo "$name,$tag,$id,$created_since,$size"
+        break
+      fi
+    done
+  done < <(docker images --format=json)
+
+  for image in "${images[@]}"; do
+    if [[ ! " ${found[*]} " =~ $image ]]; then
+      echo "$image"
+    fi
+  done
+
+) | sort | make-table "REPOSITORY,TAG,IMAGE ID,CREATED,SIZE" | highlight.red 'month' | highlight.red 'year' | highlight.yellow 'weeks'

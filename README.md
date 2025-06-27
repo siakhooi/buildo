@@ -12,7 +12,10 @@ power toys for builder.
 
 ### pip
 - `pip-{purge,upgrade}-all`
-- 
+
+### docker
+- `buildo-docker-{build,build-list,images}`
+
 ## functions
 
 ## Aliases
@@ -20,4 +23,6 @@ power toys for builder.
 ## Environment Variables
 
 ## Dependencies
-- yq
+- `yq`
+- `docker`
+- `siakhooi-devutils` - `echo.*`, `highlight.*`, `make-table`

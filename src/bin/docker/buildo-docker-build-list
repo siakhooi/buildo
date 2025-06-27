@@ -1,0 +1,11 @@
+#!/bin/bash
+
+readonly buildo_home=$HOME/.buildo
+readonly home_path=$buildo_home/docker-build
+
+if [[ -d $home_path ]]; then
+  find "$home_path" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
+else
+  echo "No docker build directories found in $home_path."
+  exit 1
+fi

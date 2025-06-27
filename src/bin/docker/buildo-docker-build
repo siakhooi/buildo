@@ -1,0 +1,35 @@
+#!/bin/bash
+
+readonly buildo_home=$HOME/.buildo
+
+if [[ $# -ne 1 ]]; then
+  echo.error "Usage: $(basename "$0") name"
+  exit 0
+fi
+
+readonly name=$1
+IMAGE_TAG=$name:latest
+
+home_path=$buildo_home/docker-build/$name
+
+if [[ ! -d $home_path ]]; then
+  echo.error "Directory $home_path does not exist."
+  exit 1
+fi
+
+DOCKERFILE_PATH=$home_path/Dockerfile
+prepare_script=$home_path/prepare.sh
+resource_dir=$home_path/resources
+
+WORKING_DIR=$(mktemp -d --tmpdir "$(basename "$0")-XXXXXXXXXX")
+set -e
+if [[ -d $resource_dir ]]; then
+  cp -vr "$resource_dir"/* "$WORKING_DIR"
+fi
+if [[ -x $prepare_script ]]; then
+  echo "Running prepare script: $prepare_script"
+  "$prepare_script" "$WORKING_DIR"
+fi
+
+set -x
+docker build -f "$DOCKERFILE_PATH" -t "$IMAGE_TAG" "$WORKING_DIR"
