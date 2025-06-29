@@ -27,11 +27,8 @@ sudo yum install siakhooi-buildo
 ### docker
 - `buildo-docker-{build,build-list,images}`
 
-## functions
-
-## Aliases
-
-## Environment Variables
+### git
+- `git-reset-very-hard`
 
 ## Dependencies
 - `yq`
