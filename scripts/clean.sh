@@ -1,4 +1,6 @@
 #!/bin/bash
 
 set -x
-rm -rf target siakhooi-buildo-*rpm siakhooi-buildo-*rpm.sha256sum siakhooi-buildo-*rpm.sha512sum
+rm -rf target \
+    siakhooi-buildo-*rpm* \
+    siakhooi-buildo_*.deb*

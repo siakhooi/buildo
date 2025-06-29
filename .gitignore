@@ -1,4 +1,5 @@
 target
 siakhooi-buildo-*.rpm
-siakhooi-buildo-*.rpm.sha256sum
-siakhooi-buildo-*.rpm.sha512sum
+siakhooi-buildo-*.rpm.sha*sum
+siakhooi-buildo_*.deb
+siakhooi-buildo_*.deb.sha*sum

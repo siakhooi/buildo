@@ -4,12 +4,8 @@ set -e
 # shellcheck disable=SC1091
 source ./release.env
 
-readonly full_name=$COMPONENT_NAME-$COMPONENT_VERSION
-
-readonly build_root=target
-readonly build_home=$build_root/$full_name
+readonly build_home=target
 readonly source_home=src
-readonly deb_file="${build_home}.deb"
 
 mkdir -p "$build_home"
 rm -rf "${build_home:?}"/*
@@ -32,8 +28,9 @@ cp -vr $source_home/lib/* "$build_lib_home"
 chmod 755 "$build_lib_home"/*
 
 fakeroot dpkg-deb --build -Zxz "$build_home"
-# dpkg-name ${deb_file}
+dpkg-name ${build_home}.deb
 
+deb_file=$(ls ./"${COMPONENT_NAME}"_*.deb)
 sha256sum "$deb_file" >"$deb_file.sha256sum"
 sha512sum "$deb_file" >"$deb_file.sha512sum"
 
