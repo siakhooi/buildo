@@ -3,7 +3,18 @@
 power toys for builder.
 
 ## Installation
-- `apt install <path/to/buildo-xxx.deb>`
+### Deb
+```
+sudo curl -L https://siakhooi.github.io/apt/siakhooi-apt.list | sudo tee /etc/apt/sources.list.d/siakhooi-apt.list > /dev/null
+sudo curl -L https://siakhooi.github.io/apt/siakhooi-apt.gpg  | sudo tee /usr/share/keyrings/siakhooi-apt.gpg > /dev/null
+sudo apt update
+sudo apt install siakhooi-buildo
+```
+### Rpm
+```
+sudo curl -L https://siakhooi.github.io/rpms/siakhooi-rpms.repo | sudo tee /etc/yum.repos.d/siakhooi-rpms.repo > /dev/null
+sudo yum install siakhooi-buildo
+```
 
 ## Binaries
 ### Config
@@ -25,4 +36,3 @@ power toys for builder.
 ## Dependencies
 - `yq`
 - `docker`
-- `siakhooi-devutils` - `echo.*`, `highlight.*`, `make-table`
