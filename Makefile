@@ -2,19 +2,32 @@ set-version:
 	scripts/set-version.sh
 clean:
 	scripts/clean.sh
-build-deb:
+build-deb: clean
+	./scripts/shellcheck.sh
 	scripts/build-deb.sh
-deploy-deb-in-dev:
-	scripts/deploy-deb-in-dev.sh
 undeploy:
 	scripts/undeploy.sh
 	rm -rf ~/.buildo
 
+build-rpm: clean
+	./scripts/shellcheck.sh
+	scripts/build-rpms.sh
+
 un-all: undeploy clean
-all-deb: clean set-version build-deb deploy-deb-in-dev
+all-deb: clean set-version build-deb deb-install
+all-rpm: clean set-version build-rpm rpm-install
 
 commit:
 	scripts/git-commit-and-push.sh
 
 release:
 	scripts/release.sh
+
+deb-install:
+	apt install ./*.deb
+deb-uninstall:
+	apt remove -y siakhooi-buildo
+rpm-install:
+	rpm -i ./*.rpm
+rpm-uninstall:
+	rpm -e siakhooi-buildo

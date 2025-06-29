@@ -1,0 +1,39 @@
+Name:           siakhooi-buildo
+Version:        0.6.0
+Release:        1%{?dist}
+Summary:        powertoys for builder
+
+License:        MIT
+URL:            https://github.com/siakhooi/buildo
+Source0:        https://github.com/siakhooi/%{name}/archive/refs/tags/${version}.tar.gz
+BuildArch:      noarch
+
+Requires:       bash, coreutils, siakhooi-devutils, util-linux, sed, findutils
+
+%description
+powertoys for builder
+
+%install
+%{__mkdir}   -v -p %{buildroot}%{_bindir}
+%{__mkdir}   -v -p %{buildroot}%{_libdir}/buildo
+%{__mkdir}   -v -p %{buildroot}/usr/share/licenses/siakhooi-buildo
+%{__install} -v -m 0755 %{_topdir}/BUILD/usr/bin/* %{buildroot}%{_bindir}
+%{__install} -v -m 0755 %{_topdir}/BUILD/usr/lib/buildo/* %{buildroot}%{_libdir}/buildo
+%{__install} -v -m 644  %{_topdir}/BUILD/LICENSE                 %{buildroot}/usr/share/licenses/siakhooi-buildo
+
+%files
+%license LICENSE
+%{_bindir}/buildo-config
+%{_bindir}/buildo-config-edit
+%{_bindir}/buildo-config-set
+%{_bindir}/buildo-version
+%{_bindir}/buildo-docker-build
+%{_bindir}/buildo-docker-build-list
+%{_bindir}/buildo-docker-images
+%{_bindir}/pip-purge-all
+%{_bindir}/pip-upgrade-all
+%{_libdir}/buildo/buildo-init
+
+%changelog
+* Sat Jun 28 2025 Siak Hooi <siakhooi@gmail.com> - 0.6.0
+- initial version

@@ -1,7 +1,7 @@
-Package: buildo
-Version: 0.4.0
+Package: siakhooi-buildo
+Version: 0.6.0
 Maintainer: Siak Hooi <siakhooi@gmail.com>
-Depends: coreutils, bash
+Depends: coreutils, bash, siakhooi-devutils, util-linux, sed, findutils
 Architecture: amd64
 Homepage: <https://github.com/siakhooi/buildo>
 Description: powertoy for builder
