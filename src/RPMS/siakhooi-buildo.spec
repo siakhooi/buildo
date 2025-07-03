@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.7.0
+Version:        0.8.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -30,12 +30,16 @@ powertoys for builder
 %{_bindir}/buildo-docker-build
 %{_bindir}/buildo-docker-build-list
 %{_bindir}/buildo-docker-images
+%{_bindir}/buildo-completion
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
 %{_bindir}/git-reset-very-hard
 %{_libdir}/buildo/buildo-init
 
 %changelog
+* Thu Jul 3 2025 Siak Hooi <siakhooi@gmail.com> - 0.8.0
+- add buildo-completion
+
 * Sun Jun 29 2025 Siak Hooi <siakhooi@gmail.com> - 0.7.0
 - add git-reset-very-hard
 

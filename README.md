@@ -16,6 +16,12 @@ sudo curl -L https://siakhooi.github.io/rpms/siakhooi-rpms.repo | sudo tee /etc/
 sudo yum install siakhooi-buildo
 ```
 
+### Setup Completion
+add the following to `~/.bashrc`
+```bash
+source <(buildo-completion)
+```
+
 ## Binaries
 ### Config
 - `buildo-config`
@@ -30,6 +36,9 @@ sudo yum install siakhooi-buildo
 ### git
 - `git-reset-very-hard`
 
+### Completion
+- `buildo-completion`
+-
 ## Dependencies
 - `yq`
 - `docker`

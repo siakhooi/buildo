@@ -1,0 +1,12 @@
+#!/bin/bash
+
+cat <<___EOF___
+_buildo-completion-with-buildo-docker-build-list(){
+  local cur choices
+  COMPREPLY=()
+  cur="\${COMP_WORDS[COMP_CWORD]}"
+  choices=\$(buildo-docker-build-list)
+  mapfile -t COMPREPLY < <(compgen -W "\${choices}" -- "\${cur}")
+}
+complete -F _buildo-completion-with-buildo-docker-build-list buildo-docker-build
+___EOF___
