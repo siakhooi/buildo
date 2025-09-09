@@ -1,0 +1,88 @@
+#!/bin/bash
+
+readonly message_directory=$HOME/.buildo-message
+readonly message_time_file=$HOME/.buildo-message-time
+
+show_usage() {
+  echo "Usage: $(basename "$0") [OPTION]"
+  echo "Options:"
+  echo "  -a TITLE MESSAGE    Add a message item with title and message"
+  echo "  -s                  Show new messages"
+  echo "  -h, --help          Show this help message"
+}
+
+add_message() {
+  local title="$1"
+  local message="$2"
+
+  if [[ -z "$title" ]]; then
+    echo.error "Title is required for adding message"
+    show_usage
+    exit 1
+  fi
+
+  mkdir -p "$message_directory"
+  local message_file
+  message_file="$message_directory/$(y2n)-$title.txt"
+
+  if [[ -n "$message" ]]; then
+    echo "$message" > "$message_file"
+  else
+    cat > "$message_file"
+  fi
+}
+
+show_messages() {
+  if [[ ! -f "$message_time_file" ]]; then
+    touch -d '1970-01-01' "$message_time_file"
+  fi
+
+  local shown_any=false
+
+  if [[ -d "$message_directory" ]]; then
+    for message_file in "$message_directory"/*; do
+      if [[ -f "$message_file" ]]; then
+        if [[ $message_file -nt $message_time_file ]]; then
+          if ! $shown_any; then
+            echo.cyan "New messages available:"
+            shown_any=true
+          fi
+          echo.green "$(basename "$message_file"):"
+          cat.grey < "$message_file"
+        fi
+      fi
+    done
+
+    if $shown_any; then
+      echo
+      touch "$message_time_file"
+    fi
+  fi
+}
+
+# Parse command line arguments
+case "$1" in
+  -a|--add)
+    if [[ $# -lt 3 ]]; then
+      echo.error "Usage: $(basename "$0") -a TITLE MESSAGE"
+      exit 1
+    fi
+    add_message "$2" "$3"
+    ;;
+  -s|--show)
+    show_messages
+    ;;
+  -h|--help)
+    show_usage
+    ;;
+  "")
+    echo.error "No option specified"
+    show_usage
+    exit 1
+    ;;
+  *)
+    echo.error "Unknown option: $1"
+    show_usage
+    exit 1
+    ;;
+esac

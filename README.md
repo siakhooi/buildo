@@ -36,9 +36,12 @@ source <(buildo-completion)
 ### git
 - `git-reset-very-hard`
 
+### message
+- `buildo-message`
+
 ### Completion
 - `buildo-completion`
--
+
 ## Dependencies
 - `yq`
 - `docker`

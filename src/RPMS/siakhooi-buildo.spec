@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.8.0
+Version:        0.9.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -31,12 +31,16 @@ powertoys for builder
 %{_bindir}/buildo-docker-build-list
 %{_bindir}/buildo-docker-images
 %{_bindir}/buildo-completion
+%{_bindir}/buildo-message
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
 %{_bindir}/git-reset-very-hard
 %{_libdir}/buildo/buildo-init
 
 %changelog
+* Wed Sep 10 2025 Siak Hooi <siakhooi@gmail.com> - 0.9.0
+- add buildo-message
+
 * Thu Jul 3 2025 Siak Hooi <siakhooi@gmail.com> - 0.8.0
 - add buildo-completion
 
