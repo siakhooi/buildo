@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.9.0
+Version:        0.10.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -38,6 +38,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init
 
 %changelog
+* Fri Sep 12 2025 Siak Hooi <siakhooi@gmail.com> - 0.10.0
+- update buildo-message with -p print filename
+
 * Wed Sep 10 2025 Siak Hooi <siakhooi@gmail.com> - 0.9.0
 - add buildo-message
 

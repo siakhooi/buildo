@@ -3,13 +3,61 @@
 readonly message_directory=$HOME/.buildo-message
 readonly message_time_file=$HOME/.buildo-message-time
 
-show_usage() {
-  echo "Usage: $(basename "$0") [OPTION]"
+usage() {
+  echo "Usage: $(basename "$0") [-h] [OPTION]"
   echo "Options:"
   echo "  -a TITLE MESSAGE    Add a message item with title and message"
   echo "  -s                  Show new messages"
+  echo "  -p                  print file name, for -s option"
   echo "  -h, --help          Show this help message"
 }
+action=
+print_file=false
+while getopts "hsap" arg; do
+  case $arg in
+  h)
+    usage
+    exit 0
+    ;;
+  s)
+    if [[ -n $action ]] && [[ $action != "show" ]]; then
+      echo.error "Only one action can be specified"
+      usage
+      exit 1
+    fi
+    action=show
+    ;;
+  a)
+    if [[ -n $action ]] && [[ $action != "add" ]]; then
+      echo.error "Only one action can be specified"
+      usage
+      exit 1
+    fi
+    action=add
+    ;;
+  p)
+    print_file=true
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ -z $action ]] ; then
+  usage
+  exit 0
+fi
+if [[ $action == 'show' ]] && [[ $# -ne 0 ]] ; then
+  usage
+  exit 0
+fi
+if [[ $action == 'add' ]] && [[ $# -ne 2 ]]; then
+  usage
+  exit 1
+fi
+
 
 add_message() {
   local title="$1"
@@ -47,7 +95,9 @@ show_messages() {
             echo.cyan "New messages available:"
             shown_any=true
           fi
-          echo.green "$(basename "$message_file"):"
+          if [[ $print_file == true ]]; then
+            echo.green "$(basename "$message_file"):"
+          fi
           cat.grey < "$message_file"
         fi
       fi
@@ -60,29 +110,11 @@ show_messages() {
   fi
 }
 
-# Parse command line arguments
-case "$1" in
-  -a|--add)
-    if [[ $# -lt 3 ]]; then
-      echo.error "Usage: $(basename "$0") -a TITLE MESSAGE"
-      exit 1
-    fi
-    add_message "$2" "$3"
-    ;;
-  -s|--show)
-    show_messages
-    ;;
-  -h|--help)
-    show_usage
-    ;;
-  "")
-    echo.error "No option specified"
-    show_usage
-    exit 1
-    ;;
-  *)
-    echo.error "Unknown option: $1"
-    show_usage
-    exit 1
-    ;;
-esac
+if [[ $action == "add" ]]; then
+  add_message "$1" "$2"
+  exit 0
+fi
+if [[ $action == "show" ]]; then
+  show_messages
+  exit 0
+fi
