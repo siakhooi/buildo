@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
+
 readonly config_file=$BUILDO_HOME/config.yaml
 
 usage() {

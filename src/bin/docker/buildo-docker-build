@@ -1,6 +1,7 @@
 #!/bin/bash
 
-readonly buildo_home=$HOME/.buildo
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
 
 if [[ $# -ne 1 ]]; then
   echo.error "Usage: $(basename "$0") name"
@@ -10,7 +11,7 @@ fi
 readonly name=$1
 IMAGE_TAG=$name:latest
 
-home_path=$buildo_home/docker-build/$name
+home_path=$BUILDO_HOME/docker-build/$name
 
 if [[ ! -d $home_path ]]; then
   echo.error "Directory $home_path does not exist."
