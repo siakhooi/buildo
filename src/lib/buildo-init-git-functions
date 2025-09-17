@@ -1,0 +1,34 @@
+#!/bin/bash
+
+function buildo_shell_prompt_for_git_repo {
+  BRANCH=$(git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/\1/')
+  if [ ! "${BRANCH}" == "" ]; then
+    status=$(git status 2>&1 | tee)
+    markers=''
+    if (echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null); then
+      markers="${markers}u"
+    fi
+    if (echo -n "${status}" 2> /dev/null | grep "new file:" &> /dev/null); then
+      markers="${markers}n"
+    fi
+    if (echo -n "${status}" 2> /dev/null | grep "renamed:" &> /dev/null); then
+      markers="${markers}r"
+    fi
+    if (echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null); then
+      markers="${markers}m"
+    fi
+    if (echo -n "${status}" 2> /dev/null | grep "deleted:" &> /dev/null); then
+      markers="${markers}d"
+    fi
+    if (echo -n "${status}" 2> /dev/null | grep "Your branch is ahead of" &> /dev/null); then
+      markers="${markers}+"
+    fi
+    if [ ! "${markers}" == "" ]; then
+      echo.green -n "[${BRANCH}:${markers}]"
+    else
+      echo.green -n "[${BRANCH}]"
+    fi
+  else
+    echo -n ""
+  fi
+}
