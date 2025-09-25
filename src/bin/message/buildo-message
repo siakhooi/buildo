@@ -65,7 +65,7 @@ add_message() {
 
   if [[ -z "$title" ]]; then
     echo.error "Title is required for adding message"
-    show_usage
+    usage
     exit 1
   fi
 
