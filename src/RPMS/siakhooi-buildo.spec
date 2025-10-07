@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.11.1
+Version:        0.12.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -39,6 +39,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Tue Oct 07 2025 Siak Hooi <siakhooi@gmail.com> - 0.12.0
+- add buildo-proxy
+
 * Thu Sep 25 2025 Siak Hooi <siakhooi@gmail.com> - 0.11.1
 - fix bud: buildo-message
 

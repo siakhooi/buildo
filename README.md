@@ -51,6 +51,9 @@ source <(buildo-completion)
 
 - `buildo-message`
 
+### Proxy
+- `buildo-proxy`
+-
 ### Completion
 
 - `buildo-completion`
