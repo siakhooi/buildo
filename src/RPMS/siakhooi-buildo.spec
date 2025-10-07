@@ -32,6 +32,7 @@ powertoys for builder
 %{_bindir}/buildo-docker-images
 %{_bindir}/buildo-completion
 %{_bindir}/buildo-message
+%{_bindir}/buildo-proxy
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
 %{_bindir}/git-reset-very-hard

@@ -1,0 +1,39 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-s]"
+  echo " -s  shell status"
+}
+action=status
+while getopts "hs" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    s)
+      action=shell
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+  usage
+  exit 0
+fi
+
+if [[ $action  == "status" ]]; then
+  echo "HTTPS_PROXY: $HTTPS_PROXY
+ HTTP_PROXY: $HTTP_PROXY
+  NO_PROXY: $NO_PROXY"
+
+  elif [[ $action  == "shell" ]]; then
+  if [[ -n "$HTTPS_PROXY" || -n "$HTTP_PROXY" ]]; then
+    echo.cyan '[proxied]'
+  fi
+
+fi
