@@ -29,11 +29,11 @@ fi
 if [[ $action  == "status" ]]; then
   echo "HTTPS_PROXY: $HTTPS_PROXY
  HTTP_PROXY: $HTTP_PROXY
-  NO_PROXY: $NO_PROXY"
+   NO_PROXY: $NO_PROXY"
 
   elif [[ $action  == "shell" ]]; then
   if [[ -n "$HTTPS_PROXY" || -n "$HTTP_PROXY" ]]; then
-    echo.cyan '[proxied]'
+    echo.cyan -n '[proxied]'
   fi
 
 fi
