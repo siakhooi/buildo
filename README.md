@@ -53,7 +53,10 @@ source <(buildo-completion)
 
 ### Proxy
 - `buildo-proxy`
--
+
+### Github
+- `buildo-github-release-latest-get`
+
 ### Completion
 
 - `buildo-completion`

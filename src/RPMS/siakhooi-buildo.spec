@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.12.1
+Version:        0.13.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -36,10 +36,14 @@ powertoys for builder
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
 %{_bindir}/git-reset-very-hard
+%{_bindir}/buildo-github-release-latest-get
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Fri Oct 10 2025 Siak Hooi <siakhooi@gmail.com> - 0.13.0
+- add buildo-github-release-latest-get
+
 * Wed Oct 08 2025 Siak Hooi <siakhooi@gmail.com> - 0.12.1
 - fix buildo-proxy shell, remove newline
 
