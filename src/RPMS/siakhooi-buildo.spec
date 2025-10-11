@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.14.0
+Version:        0.15.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -23,25 +23,32 @@ powertoys for builder
 
 %files
 %license LICENSE
+%{_bindir}/buildo-anacron-exec
+%{_bindir}/buildo-anacron-log
+%{_bindir}/buildo-anacron-run
+%{_bindir}/buildo-anacron-status
+%{_bindir}/buildo-completion
 %{_bindir}/buildo-config
 %{_bindir}/buildo-config-edit
 %{_bindir}/buildo-config-set
-%{_bindir}/buildo-version
 %{_bindir}/buildo-docker-build
 %{_bindir}/buildo-docker-build-list
 %{_bindir}/buildo-docker-images
-%{_bindir}/buildo-completion
+%{_bindir}/buildo-github-release-latest-get
 %{_bindir}/buildo-message
 %{_bindir}/buildo-proxy
+%{_bindir}/buildo-version
+%{_bindir}/git-reset-very-hard
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
-%{_bindir}/git-reset-very-hard
-%{_bindir}/buildo-github-release-latest-get
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
-* Fri Oct 10 2025 Siak Hooi <siakhooi@gmail.com> - 0.13.0
+* Sat Oct 11 2025 Siak Hooi <siakhooi@gmail.com> - 0.15.0
+- add buildo-anacron-{exec,log,run,status}
+
+* Fri Oct 10 2025 Siak Hooi <siakhooi@gmail.com> - 0.14.0
 - add buildo-github-release-latest-get
 
 * Wed Oct 08 2025 Siak Hooi <siakhooi@gmail.com> - 0.12.1

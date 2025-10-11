@@ -52,14 +52,20 @@ source <(buildo-completion)
 - `buildo-message`
 
 ### Proxy
+
 - `buildo-proxy`
 
 ### Github
+
 - `buildo-github-release-latest-get`
 
 ### Completion
 
 - `buildo-completion`
+
+### Anacron
+
+- `buildo-anacron-{exec,log,run,status}`
 
 ### Init functions
 

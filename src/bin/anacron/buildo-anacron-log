@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] job-identifier"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 0
+fi
+job_id=$1
+working_home=$(buildo-config .anacron.working-home )
+working_home=${working_home:-$HOME/.buildo-anacron}
+readonly log_directory="$working_home/$job_id"
+
+if [[ ! -d $log_directory ]]; then
+  echo.error "log directory: $log_directory: not found."
+  exit 2
+fi
+
+latest_log_file=$(find "$log_directory" -name "*.log" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n | tail -n 1 | cut -d' ' -f2-)
+if [[ -z $latest_log_file ]]; then
+  echo "No log file found in $log_directory"
+  exit 0
+fi
+echo.blue "[$latest_log_file]"
+cat "$latest_log_file"
+

@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-l] job-identifier commands..."
+  echo " -l   highlight the result even is SUCCESS"
+}
+highlight=false
+while getopts "hl" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    l)
+      highlight=true
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -lt 2 ]]; then
+  usage
+  exit 0
+fi
+
+readonly job_id=$1
+
+shift
+
+working_home=$(buildo-config .anacron.working-home )
+working_home=${working_home:-$HOME/.buildo-anacron}
+
+job_home="$working_home/$job_id"
+job_timestamp=$(date +%Y%m%d%H%M%S.%N)
+log_file=$job_home/${job_timestamp}.log
+
+mkdir -p "$job_home"
+
+export job_id job_home job_timestamp
+
+readonly anacron_init_env=$BUILDO_HOME/anacron/init-environment.sh
+
+(
+  if [[ -f "$anacron_init_env" ]]; then
+    # shellcheck disable=SC1090
+    source "$anacron_init_env"
+  else
+    echo.debug "init-environment.sh: $anacron_init_env: not found."
+  fi
+
+  "$@"
+
+) >&"$log_file"
+exit_code=$?
+if [[ $exit_code == 0 ]]; then
+  if [[ $highlight == "true" ]]; then
+    result_text=$(echo.green -n "SUCCESS")
+  else
+    result_text=$(echo.grey -n "SUCCESS")
+  fi
+else
+  result_text=$(echo.red -n "FAILURE:$exit_code")
+fi
+
+anacron_chown=$(buildo-config .anacron.chown )
+if [[ -n $anacron_chown ]]; then
+  chown --changes -R "$anacron_chown" "$job_home"
+fi
+
+message_user=$(buildo-config .anacron.message_user )
+if [[ -n $message_user ]]; then
+  sudo -u "$message_user" buildo-message -a "$job_id" "[$result_text] $job_id $log_file"
+else
+  buildo-message -a "$job_id" "[$result_text] $job_id $log_file"
+fi

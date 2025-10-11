@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-n]"
+  echo "  -n  use network profile (call my-network-profile)"
+}
+check_network_profile=false
+while getopts "hn" arg; do
+  case $arg in
+  h)
+    usage
+    exit 0
+    ;;
+  n)
+    check_network_profile=true
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+  usage
+  exit 0
+fi
+
+name=$(whoami)
+
+readonly anacrontab_home=$BUILDO_HOME/anacrontab
+working_home=$(buildo-config .anacron.working-home )
+working_home=${working_home:-$HOME/.buildo-anacron}
+readonly log_file="$working_home/execution.log"
+
+mkdir -p "$working_home"
+
+ds=$(date +'%Y%m%d %H:%M:%S %N')
+
+if $check_network_profile; then
+  network_profile_bin=$(buildo-config .anacron.network-profile-bin )
+  network_profile=$("$network_profile_bin")
+  if [[ -n $network_profile ]]; then
+      name="${name}-${network_profile}"
+  else
+      name="${name}-unknown"
+  fi
+fi
+
+readonly spool_directory="$working_home/spool"
+readonly anacrontab="$anacrontab_home/$name"
+
+if [[ ! -f $anacrontab ]]; then
+  echo.error "anacrontab: $anacrontab: not found."
+  echo "${ds} $anacrontab: not found">>"$log_file"
+  exit 2
+fi
+
+mkdir -p "$spool_directory" || {
+  echo "Failed to create directory $spool_directory"
+  echo "${ds} $anacrontab Failed to create directory $spool_directory">>"$log_file"
+  exit 1
+}
+(
+  set -x
+  anacron -s -t "$anacrontab" -S "$spool_directory"
+)
+
+anacron_chown=$(buildo-config '.anacron.chown' )
+if [[ -n $anacron_chown ]]; then
+  chown --changes -R "$anacron_chown" "$spool_directory"
+fi
+
+echo "${ds} $anacrontab">>"$log_file"

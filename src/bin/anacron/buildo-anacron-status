@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+source  /usr/lib/buildo/buildo-init
+
+working_home=$(buildo-config .anacron.working-home )
+working_home=${working_home:-$HOME/.buildo-anacron}
+readonly spool_directory="$working_home/spool"
+
+filecount=$(find "$spool_directory" -type f | wc -l)
+(
+  for file in "$spool_directory"/*; do
+    if [[ -f $file ]]; then
+      filename=$(basename "$file")
+      suffix " $(echo.green -n " $filename")" <"$file"
+
+    fi
+  done
+) | sort
+
+echo
+echo.cyan "Total files in spool directory: $filecount"
+
+pids=$(pgrep -x anacron)
+
+if [[ -n $pids ]]; then
+  echo.cyan "Anacron is running (pid: $pids)."
+fi
