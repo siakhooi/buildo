@@ -29,20 +29,20 @@ if [[ $# -lt 2 ]]; then
   exit 0
 fi
 
-readonly job_id=$1
+readonly BUILDO_ANACRON_JOB_ID=$1
 
 shift
 
 working_home=$(buildo-config .anacron.working-home )
 working_home=${working_home:-$HOME/.buildo-anacron}
 
-job_home="$working_home/$job_id"
-job_timestamp=$(date +%Y%m%d%H%M%S.%N)
-log_file=$job_home/${job_timestamp}.log
+BUILDO_ANACRON_JOB_HOME="$working_home/$BUILDO_ANACRON_JOB_ID"
+BUILDO_ANACRON_JOB_TIMESTAMP=$(date +%Y%m%d%H%M%S.%N)
+log_file=$BUILDO_ANACRON_JOB_HOME/${BUILDO_ANACRON_JOB_TIMESTAMP}.log
 
-mkdir -p "$job_home"
+mkdir -p "$BUILDO_ANACRON_JOB_HOME"
 
-export job_id job_home job_timestamp
+export BUILDO_ANACRON_JOB_ID BUILDO_ANACRON_JOB_HOME BUILDO_ANACRON_JOB_TIMESTAMP
 
 readonly anacron_init_env=$BUILDO_HOME/anacron/init-environment.sh
 
@@ -70,12 +70,12 @@ fi
 
 anacron_chown=$(buildo-config .anacron.chown )
 if [[ -n $anacron_chown ]]; then
-  chown --changes -R "$anacron_chown" "$job_home"
+  chown --changes -R "$anacron_chown" "$BUILDO_ANACRON_JOB_HOME"
 fi
 
 message_user=$(buildo-config .anacron.message_user )
 if [[ -n $message_user ]]; then
-  sudo -u "$message_user" buildo-message -a "$job_id" "[$result_text] $job_id $log_file"
+  sudo -u "$message_user" buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
 else
-  buildo-message -a "$job_id" "[$result_text] $job_id $log_file"
+  buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
 fi

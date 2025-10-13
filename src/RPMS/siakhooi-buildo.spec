@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.15.0
+Version:        0.15.1
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -45,6 +45,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Mon Oct 13 2025 Siak Hooi <siakhooi@gmail.com> - 0.15.1
+- fix buildo-anacron-exec exported environment variables
+
 * Sat Oct 11 2025 Siak Hooi <siakhooi@gmail.com> - 0.15.0
 - add buildo-anacron-{exec,log,run,status}
 
