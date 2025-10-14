@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.15.1
+Version:        0.16.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -27,6 +27,9 @@ powertoys for builder
 %{_bindir}/buildo-anacron-log
 %{_bindir}/buildo-anacron-run
 %{_bindir}/buildo-anacron-status
+%{_bindir}/buildo-checker-docker-usage
+%{_bindir}/buildo-checker-path-usage
+%{_bindir}/buildo-checker-space-left
 %{_bindir}/buildo-completion
 %{_bindir}/buildo-config
 %{_bindir}/buildo-config-edit
@@ -45,6 +48,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Tue Oct 14 2025 Siak Hooi <siakhooi@gmail.com> - 0.16.0
+- add buildo-checker-{docker-usage,path-usage,space-left}
+
 * Mon Oct 13 2025 Siak Hooi <siakhooi@gmail.com> - 0.15.1
 - fix buildo-anacron-exec exported environment variables
 

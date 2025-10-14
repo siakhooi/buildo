@@ -1,0 +1,54 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] volume_code"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+
+set -e
+
+volume_code=$1
+volume=$(buildo-config ".checker.space-left.${volume_code}.volume")
+threshold_gb=$(buildo-config ".checker.space-left.${volume_code}.threshold_gb")
+volume_name=$(buildo-config ".checker.space-left.${volume_code}.name")
+
+if [[ -z $volume ]]; then
+  echo.error "Volume not found"
+  exit 2
+fi
+if [[ -z $threshold_gb ]]; then
+  echo.error "Volume threshold not configured"
+  exit 3
+fi
+if [[ -z $volume_name ]]; then
+  echo.error "Volume name not configured"
+  exit 4
+fi
+
+avail_kb=$(df "$volume" --output=avail -k | tail -1)
+
+avail_gb=$(( avail_kb / 1024 / 1024 ))
+
+if [ "$avail_gb" -lt "$threshold_gb" ]; then
+  echo.red  "Disk space on ${volume_name}: ${avail_gb} GB available [threshold: $threshold_gb GB]: [Low]"
+  exit 1
+else
+  echo.green "Disk space on ${volume_name}: ${avail_gb} GB available [threshold: $threshold_gb GB]: [Healthy]"
+  exit 0
+fi

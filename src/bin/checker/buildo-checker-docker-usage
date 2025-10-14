@@ -1,0 +1,74 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h]"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+  usage
+  exit 1
+fi
+
+set -e
+
+THRESHOLD=$(buildo-config ".checker.docker-usage.threshold_mb")
+
+# Function to convert size text to megabytes
+convert_to_mb() {
+  local size_text="$1"
+
+  # Extract number and unit using regex
+  if [[ $size_text =~ ^([0-9]+\.?[0-9]*)([A-Za-z]+)$ ]]; then
+    local number="${BASH_REMATCH[1]}"
+    local unit="${BASH_REMATCH[2]}"
+
+    case "${unit^^}" in  # Convert to uppercase
+      "B"|"BYTES")
+        echo "scale=2; $number / 1024 / 1024" | bc
+      ;;
+      "KB"|"K")
+        echo "scale=2; $number / 1024" | bc
+      ;;
+      "MB"|"M")
+        echo "$number"
+      ;;
+      "GB"|"G")
+        echo "scale=2; $number * 1024" | bc
+      ;;
+      "TB"|"T")
+        echo "scale=2; $number * 1024 * 1024" | bc
+      ;;
+      *)
+        echo "Error: Unknown unit '$unit'" >&2
+        echo "0"
+      ;;
+    esac
+  else
+    echo "Error: Invalid format '$size_text'" >&2
+    echo "0"
+  fi
+}
+
+size_in_text=$(docker system df --format json | grep "Images" | jq -r ".Size")
+
+size_in_mb=$(convert_to_mb "$size_in_text")
+
+if (( $(echo "$size_in_mb > $THRESHOLD" | bc -l) )); then
+    echo "⚠️ Docker usage is ${size_in_mb} MB, above ${THRESHOLD} MB!"
+    exit 1
+else
+    echo "✅ Docker usage is ${size_in_mb} MB (below threshold ${THRESHOLD} MB)."
+    exit 0
+fi

@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] path_code"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 1
+fi
+
+set -euo pipefail
+
+readonly path_code=$1
+target_path=$(buildo-config ".checker.path-usage.${path_code}.path")
+threshold_mb=$(buildo-config ".checker.path-usage.${path_code}.threshold_mb")
+path_name=$(buildo-config ".checker.path-usage.${path_code}.name")
+
+if [[ -z "$target_path" ]]; then
+  echo.error "target path for $path_code is not configured"
+  exit 1
+fi
+if [[ -z "$threshold_mb" ]]; then
+  echo.error "threshold for $path_code is not configured"
+  exit 1
+fi
+if [[ ! -e "$target_path" ]]; then
+  echo.error "Error: '$target_path' does not exist"
+  exit 1
+fi
+
+if [[ ! -d "$target_path" && ! -f "$target_path" ]]; then
+  echo.error "Error: '$target_path' is neither a directory nor a regular file"
+  exit 1
+fi
+
+# Get disk usage in bytes using du
+USAGE_BYTES=$(du -sb "$target_path" | cut -f1)
+
+# Convert threshold_mb to bytes (100 * 1024^2)
+LIMIT_BYTES=$(("$threshold_mb" * 1024 * 1024))
+USAGE_MB=$((USAGE_BYTES / 1024 / 1024))
+
+# Compare usage with limit
+if [[ $USAGE_BYTES -gt $LIMIT_BYTES ]]; then
+  echo.error "Usage for $path_name is ${USAGE_MB}MB [threshold: ${threshold_mb}MB]"
+  exit 1
+else
+  echo.green "Usage for $path_name is ${USAGE_MB}MB [threshold: ${threshold_mb}MB]"
+  exit 0
+fi
+
