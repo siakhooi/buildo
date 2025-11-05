@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $(basename "$0") url_path [other options...]" >&2
+  exit 0
+fi
+
+jira_url=$(buildo-config .jira.url)
+jira_api_token=$(buildo-config .jira.api-token)
+
+url=$jira_url/$1
+
+shift
+
+curl --location --no-progress-meter --header "Authorization: Bearer $jira_api_token" "$url" "$@"

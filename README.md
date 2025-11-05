@@ -51,6 +51,11 @@ source <(buildo-completion)
 
 - `buildo-message`
 
+### Jira
+
+- `buildo-jira-curl`
+- `buildo-jira-{issue,status}-get`
+
 ### Proxy
 
 - `buildo-proxy`

@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.16.0
+Version:        0.17.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -41,6 +41,9 @@ powertoys for builder
 %{_bindir}/buildo-message
 %{_bindir}/buildo-proxy
 %{_bindir}/buildo-version
+%{_bindir}/buildo-jira-curl
+%{_bindir}/buildo-jira-issue-get
+%{_bindir}/buildo-jira-status-get
 %{_bindir}/git-reset-very-hard
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
@@ -48,6 +51,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed Nov 05 2025 Siak Hooi <siakhooi@gmail.com> - 0.17.0
+- add buildo-jira-curl, buildo-jira-{issue,status}-get
+
 * Tue Oct 14 2025 Siak Hooi <siakhooi@gmail.com> - 0.16.0
 - add buildo-checker-{docker-usage,path-usage,space-left}
 

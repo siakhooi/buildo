@@ -1,0 +1,39 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] jira# [jqquery]"
+  echo "Example: $(basename "$0") 12345 '.fields.status.name'"
+  echo "Example: $(basename "$0") 12345 '.fields.summary'"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]] && [[ $# -ne 2 ]]; then
+  usage
+  exit 0
+fi
+
+readonly JIRA_NUMBER=$1
+readonly jq_query=$2
+
+
+if [[ $# -eq 1 ]]; then
+
+  buildo-jira-curl "issue/$JIRA_NUMBER"
+
+elif [[ $# -eq 2 ]]; then
+
+  buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r "$jq_query"
+
+fi
+
