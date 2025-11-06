@@ -1,0 +1,35 @@
+#!/bin/bash
+
+jira_projects=$(buildo-config '.jira.projects[]')
+myjira_home=$(buildo-config '.jira.home')
+myjira_home=${myjira_home:-$HOME}
+
+for dir in "$myjira_home"/*; do
+  if [ -d "$dir" ]; then
+    jira_name=$(basename "$dir")
+
+    match=false
+    for prefix in $jira_projects; do
+      if [[ $jira_name == ${prefix}-* ]]; then
+        match=true
+        break
+      fi
+    done
+    if ! $match; then
+      continue
+    fi
+
+    jira=$(buildo-jira-issue-get "$jira_name")
+
+    jira_status=$(echo "$jira" | jq -r '.fields.status.name')
+    jira_summary=$(echo "$jira" | jq -r '.fields.summary')
+
+    printf "%-11s: %-21s: %s \n" "$jira_name" "$jira_status" "$jira_summary" |
+      highlight.grey 'Done' |
+      highlight.cyan 'Ready for review' |
+      highlight.green 'In Analysis' |
+      highlight.green 'In Progress' |
+      highlight.green 'In Verification' |
+      highlight.blue 'Pending for 3rd party'
+  fi
+done

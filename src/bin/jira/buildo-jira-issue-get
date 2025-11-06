@@ -1,19 +1,24 @@
 #!/bin/bash
 
 usage() {
-  echo "Usage: $(basename "$0") [-h] jira# [jqquery]"
-  echo "Example: $(basename "$0") 12345 '.fields.status.name'"
-  echo "Example: $(basename "$0") 12345 '.fields.summary'"
+  echo "Usage: $(basename "$0") [-h] [-f attachment_filename] jira# [jqquery]"
+  echo "Example: $(basename "$0") XXXX-12345"
+  echo "Example: $(basename "$0") XXXX-12345 '.fields.status.name'"
+  echo "Example: $(basename "$0") XXXX-12345 '.fields.summary'"
+  echo "Example: $(basename "$0") -f attachment_filename XXXX-12345 '.id'"
 }
-while getopts "h" arg; do
+while getopts "hf:" arg; do
   case $arg in
-    h)
-      usage
-      exit 0
+  h)
+    usage
+    exit 0
     ;;
-    *)
-      usage
-      exit 1
+  f)
+    attachment_filename=$OPTARG
+    ;;
+  *)
+    usage
+    exit 1
     ;;
   esac
 done
@@ -26,14 +31,20 @@ fi
 readonly JIRA_NUMBER=$1
 readonly jq_query=$2
 
-
 if [[ $# -eq 1 ]]; then
 
-  buildo-jira-curl "issue/$JIRA_NUMBER"
+  if [[ -n "$attachment_filename" ]]; then
+    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'$attachment_filename'")'
+  else
+    buildo-jira-curl "issue/$JIRA_NUMBER"
+  fi
 
 elif [[ $# -eq 2 ]]; then
 
-  buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r "$jq_query"
+  if [[ -n "$attachment_filename" ]]; then
+    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'$attachment_filename'")' | jq -r "$jq_query"
+  else
+    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r "$jq_query"
+  fi
 
 fi
-

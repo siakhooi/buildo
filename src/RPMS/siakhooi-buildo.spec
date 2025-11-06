@@ -44,6 +44,7 @@ powertoys for builder
 %{_bindir}/buildo-jira-curl
 %{_bindir}/buildo-jira-issue-get
 %{_bindir}/buildo-jira-status-get
+%{_bindir}/my-jira
 %{_bindir}/git-reset-very-hard
 %{_bindir}/pip-purge-all
 %{_bindir}/pip-upgrade-all
@@ -52,7 +53,7 @@ powertoys for builder
 
 %changelog
 * Wed Nov 05 2025 Siak Hooi <siakhooi@gmail.com> - 0.18.0
-- update buildo-proxy
+- update buildo-proxy,buildo-jira-issue-get add my-jira
 
 * Wed Nov 05 2025 Siak Hooi <siakhooi@gmail.com> - 0.17.0
 - add buildo-jira-curl, buildo-jira-{issue,status}-get
