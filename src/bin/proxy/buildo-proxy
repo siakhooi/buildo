@@ -27,12 +27,16 @@ if [[ $# -ne 0 ]]; then
 fi
 
 if [[ $action  == "status" ]]; then
+# shellcheck disable=SC2154
   echo "HTTPS_PROXY: $HTTPS_PROXY
  HTTP_PROXY: $HTTP_PROXY
-   NO_PROXY: $NO_PROXY"
+   NO_PROXY: $NO_PROXY
+https_proxy: $https_proxy
+ http_proxy: $http_proxy
+   no_proxy: $no_proxy"
 
   elif [[ $action  == "shell" ]]; then
-  if [[ -n "$HTTPS_PROXY" || -n "$HTTP_PROXY" ]]; then
+  if [[ -n "$HTTPS_PROXY" || -n "$HTTP_PROXY" || -n "$https_proxy" || -n "$http_proxy" ]]; then
     echo.cyan -n '[proxied]'
   fi
 

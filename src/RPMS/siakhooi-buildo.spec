@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.17.0
+Version:        0.18.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -51,6 +51,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed Nov 05 2025 Siak Hooi <siakhooi@gmail.com> - 0.18.0
+- update buildo-proxy
+
 * Wed Nov 05 2025 Siak Hooi <siakhooi@gmail.com> - 0.17.0
 - add buildo-jira-curl, buildo-jira-{issue,status}-get
 
