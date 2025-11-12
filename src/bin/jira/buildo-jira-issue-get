@@ -34,7 +34,7 @@ readonly jq_query=$2
 if [[ $# -eq 1 ]]; then
 
   if [[ -n "$attachment_filename" ]]; then
-    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'$attachment_filename'")'
+    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'"$attachment_filename"'")'
   else
     buildo-jira-curl "issue/$JIRA_NUMBER"
   fi
@@ -42,7 +42,7 @@ if [[ $# -eq 1 ]]; then
 elif [[ $# -eq 2 ]]; then
 
   if [[ -n "$attachment_filename" ]]; then
-    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'$attachment_filename'")' | jq -r "$jq_query"
+    buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r '.fields.attachment[]|select(.filename == "'"$attachment_filename"'")' | jq -r "$jq_query"
   else
     buildo-jira-curl "issue/$JIRA_NUMBER" | jq -r "$jq_query"
   fi

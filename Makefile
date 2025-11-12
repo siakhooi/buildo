@@ -2,15 +2,16 @@ set-version:
 	scripts/set-version.sh
 clean:
 	scripts/clean.sh
-build-deb: clean
+
+shellcheck:
 	./scripts/shellcheck.sh
+build-deb: clean shellcheck
 	scripts/build-deb.sh
 undeploy:
 	scripts/undeploy.sh
 	rm -rf ~/.buildo
 
-build-rpm: clean
-	./scripts/shellcheck.sh
+build-rpm: clean shellcheck
 	scripts/build-rpms.sh
 
 un-all: undeploy clean

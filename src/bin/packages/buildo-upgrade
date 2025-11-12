@@ -1,0 +1,140 @@
+#!/bin/bash
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] type [path1]"
+  echo "   $(basename "$0") apt"
+  echo "   $(basename "$0") poetry"
+  echo "   $(basename "$0") go /path/to/go/home"
+  echo "   $(basename "$0") pip /path/to/pyvenv/home"
+  echo "   $(basename "$0") nvm /path/to/nvm/home"
+}
+while getopts "h" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+
+readonly upgrade_type=$1
+readonly path1=$2
+
+if [[ $upgrade_type == "apt" ]] || [[ $upgrade_type == "poetry" ]]; then
+  if [[ $# -ne 1 ]]; then
+    usage
+    exit 0
+  fi
+
+elif [[ $upgrade_type == "go" ]]; then
+  if [[ $# -ne 2 ]] || [[ -z "$path1" ]]; then
+    usage
+    exit 0
+  fi
+
+elif [[ $upgrade_type == "pip" ]]; then
+  if [[ $# -ne 2 ]] || [[ -z "$path1" ]]; then
+    usage
+    exit 0
+  fi
+
+elif [[ $upgrade_type == "nvm" ]]; then
+  if [[ $# -ne 2 ]] || [[ -z "$path1" ]]; then
+    usage
+    exit 0
+  fi
+else
+  echo.error "Unknown upgrade type: $upgrade_type"
+  usage
+  exit 1
+fi
+
+if [[ $upgrade_type == "apt" ]]; then
+  (
+    set -ex
+
+    apt update -y
+    apt list --upgradable
+    apt upgrade -y
+    apt autoremove -y
+    apt clean
+    apt list --upgradable
+
+  )
+
+elif [[ $upgrade_type == "poetry" ]]; then
+  (
+    # shellcheck disable=SC2030
+    export PATH="$HOME/.local/bin:$PATH"
+    set -ex
+    poetry self update
+  )
+
+elif [[ $upgrade_type == "go" ]]; then
+  (
+    go_root="$path1"
+
+    if [[ ! -d $go_root ]]; then
+      echo.error "go_root $go_root does not exist"
+      exit 1
+    fi
+
+    # shellcheck disable=SC2031
+    # shellcheck disable=SC2030
+    export PATH=$go_root/bin:$PATH
+    echo "GOPATH: $(go env GOPATH)"
+    echo "GOROOT: $(go env GOROOT)"
+    echo "GOBIN : $(go env GOBIN)"
+    gopath=$(go env GOPATH)
+
+    export PATH=$gopath/bin:$PATH
+    gup update
+
+  )
+
+elif [[ $upgrade_type == "pip" ]]; then
+  (
+    pyvenv_root="$path1"
+    if [[ ! -d $pyvenv_root ]]; then
+      echo.error "pyvenv_root $pyvenv_root does not exist"
+      exit 1
+    fi
+
+    # shellcheck disable=SC2031
+    export PATH=$pyvenv_root/bin:$PATH
+    echo "PYVENV: $pyvenv_root"
+    echo "PATH: $PATH"
+    pip install --upgrade pip
+    pip --disable-pip-version-check list --outdated --format=json |
+    jq -r .[].name | xargs -r -n1 pip install -U
+  )
+
+elif [[ $upgrade_type == "nvm" ]]; then
+  (
+    nvm_home="$path1"
+    if [[ ! -d $nvm_home ]]; then
+      echo.error "$nvm_home does not exist"
+      exit 1
+    fi
+    if [[ ! -f $nvm_home/nvm.sh ]]; then
+      echo.error "$nvm_home/nvm.sh does not exist"
+      exit 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$nvm_home/nvm.sh"
+
+    nvm ls --no-alias --no-colors | cut -c 8-15 | while read -r nvm_version; do
+      (
+        echo.green "[${nvm_version}]"
+        nvm exec "${nvm_version}" npm list -g --depth=0
+        nvm exec "${nvm_version}" npm upgrade --location=global
+      )
+    done
+  )
+fi

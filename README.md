@@ -64,6 +64,9 @@ source <(buildo-completion)
 
 - `buildo-github-release-latest-get`
 
+### Package
+- `buildo-upgrade`
+
 ### Completion
 
 - `buildo-completion`
