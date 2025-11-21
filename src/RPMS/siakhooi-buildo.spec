@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.19.0
+Version:        0.19.1
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -48,11 +48,13 @@ powertoys for builder
 %{_bindir}/my-jira
 %{_bindir}/git-reset-very-hard
 %{_bindir}/pip-purge-all
-%{_bindir}/pip-upgrade-all
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Fri Nov 21 2025 Siak Hooi <siakhooi@gmail.com> - 0.19.1
+- remove pip-upgrade-all
+
 * Wed Nov 12 2025 Siak Hooi <siakhooi@gmail.com> - 0.19.0
 - add buildo-upgrade, fix quote issue in buildo-jira-issue-get
 
