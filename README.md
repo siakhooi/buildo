@@ -43,10 +43,6 @@ source <(buildo-completion)
 
 - `buildo-docker-{build,build-list,images}`
 
-### git
-
-- `git-reset-very-hard`
-
 ### message
 
 - `buildo-message`

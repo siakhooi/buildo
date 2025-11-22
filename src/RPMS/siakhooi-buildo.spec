@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.19.1
+Version:        0.19.2
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -46,12 +46,14 @@ powertoys for builder
 %{_bindir}/buildo-jira-issue-get
 %{_bindir}/buildo-jira-status-get
 %{_bindir}/my-jira
-%{_bindir}/git-reset-very-hard
 %{_bindir}/pip-purge-all
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Sat Nov 22 2025 Siak Hooi <siakhooi@gmail.com> - 0.19.2
+- remove git-reset-very-hard
+
 * Fri Nov 21 2025 Siak Hooi <siakhooi@gmail.com> - 0.19.1
 - remove pip-upgrade-all
 
