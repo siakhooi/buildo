@@ -1,0 +1,74 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-d repo_parent_directory] git-repo-path..."
+}
+
+git_repos=()
+while getopts "hd:" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	d)
+		mapfile -t -O "${#git_repos[@]}" git_repos < <(find "$OPTARG" -maxdepth 1 -mindepth 1 -type d)
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+git_repos+=("$@")
+
+if ! command -v git &>/dev/null; then
+	echo.error "git command not found"
+	exit 1
+fi
+
+if [[ ${#git_repos[@]} -eq 0 ]]; then
+	echo.error "No git repositories specified"
+	exit 1
+fi
+status=0
+has_error=false
+for git_repo_path in "${git_repos[@]}"; do
+
+	if [[ ! -d "$git_repo_path" ]]; then
+		echo.error "$git_repo_path not exist"
+		has_error=true
+		[[ $status -eq 0 ]] && status=1
+		continue
+	fi
+	if [[ ! -d "$git_repo_path/.git" ]]; then
+		echo.warn "$git_repo_path is not a git repository"
+		continue
+	fi
+	if ! git -C "$git_repo_path" remote &>/dev/null || [[ -z $(git -C "$git_repo_path" remote) ]]; then
+		echo.warn "$git_repo_path has no remote configured"
+		continue
+	fi
+
+	cd "$git_repo_path" || {
+		echo.error "Failed to change directory to $git_repo_path"
+		has_error=true
+		[[ $status -eq 0 ]] && status=1
+	}
+	echo "Git Pull: $git_repo_path"
+	(
+		set -x
+		git pull --rebase
+		exit $?
+	)
+	pull_status=$?
+	if [[ $pull_status -ne 0 ]]; then
+		[[ $status -eq 0 ]] && status=$pull_status
+		has_error=true
+	fi
+done
+
+if $has_error; then
+	exit 1
+fi

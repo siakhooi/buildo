@@ -71,6 +71,9 @@ source <(buildo-completion)
 
 - `buildo-anacron-{exec,log,run,status}`
 
+### Git
+- `buildo-git-pull`
+
 ### Init functions
 
 - `/usr/lib/buildo/buildo-init-git-functions`

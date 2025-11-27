@@ -1,5 +1,5 @@
 Package: siakhooi-buildo
-Version: 0.19.2
+Version: 0.20.0
 Maintainer: Siak Hooi <siakhooi@gmail.com>
 Depends: coreutils, bash, siakhooi-devutils, util-linux, sed, findutils
 Architecture: amd64
