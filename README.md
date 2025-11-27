@@ -30,49 +30,22 @@ source <(buildo-completion)
 
 ## Binaries
 
-### Config
-
-- `buildo-config`
-- `buildo-config-{edit,set}`
-
-### pip
-
-- `pip-{purge,upgrade}-all`
-
-### docker
-
-- `buildo-docker-{build,build-list,images}`
-
-### message
-
-- `buildo-message`
-
-### Jira
-
-- `buildo-jira-curl`
-- `buildo-jira-{issue,status}-get`
-
-### Proxy
-
-- `buildo-proxy`
-
-### Github
-
-- `buildo-github-release-latest-get`
-
-### Package
-- `buildo-upgrade`
-
-### Completion
-
-- `buildo-completion`
-
-### Anacron
-
 - `buildo-anacron-{exec,log,run,status}`
-
-### Git
+- `buildo-checker-{docker-usage,path-usage,space-left}`
+- `buildo-completion`
+- `buildo-config-{edit,set}`
+- `buildo-config`
+- `buildo-docker-{build,build-list,images}`
 - `buildo-git-pull`
+- `buildo-github-release-latest-get`
+- `buildo-jira-{issue,status}-get`
+- `buildo-jira-curl`
+- `buildo-message`
+- `buildo-proxy`
+- `buildo-upgrade`
+- `buildo-version`
+- `my-jira`
+- `pip-purge-all`
 
 ### Init functions
 
