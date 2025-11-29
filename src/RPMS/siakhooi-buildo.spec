@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.20.0
+Version:        0.21.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -39,6 +39,7 @@ powertoys for builder
 %{_bindir}/buildo-docker-images
 %{_bindir}/buildo-github-release-latest-get
 %{_bindir}/buildo-git-pull
+%{_bindir}/buildo-housekeep-by-age
 %{_bindir}/buildo-message
 %{_bindir}/buildo-proxy
 %{_bindir}/buildo-upgrade
@@ -52,6 +53,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Sat Nov 29 2025 Siak Hooi <siakhooi@gmail.com> - 0.21.0
+- add buildo-housekeep-by-age
+
 * Thu Nov 27 2025 Siak Hooi <siakhooi@gmail.com> - 0.20.0
 - add buildo-git-pull
 

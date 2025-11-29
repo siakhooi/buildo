@@ -38,6 +38,7 @@ source <(buildo-completion)
 - `buildo-docker-{build,build-list,images}`
 - `buildo-git-pull`
 - `buildo-github-release-latest-get`
+- `buildo-housekeep-by-age`
 - `buildo-jira-{issue,status}-get`
 - `buildo-jira-curl`
 - `buildo-message`

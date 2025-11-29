@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+
+scan_subdirectory=false
+dry_run=false
+age_in_days=30
+min_to_keep=1
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-s] [-d] [-a days] [-m minimum_to_keep] directory"
+  echo " -s            include subdirectory"
+  echo " -a   <days>   age in days, default: 30"
+  echo " -m   <count>  minimum files to keep, default: 1"
+  echo " -d            dry run"
+}
+while getopts "hsda:m:" arg; do
+  case $arg in
+    h)
+      usage
+      exit 0
+    ;;
+    m)
+      min_to_keep="$OPTARG"
+    ;;
+    d)
+      dry_run=true
+    ;;
+    s)
+      scan_subdirectory=true
+    ;;
+    a)
+      age_in_days="$OPTARG"
+    ;;
+    *)
+      usage
+      exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 0
+fi
+
+set -euo pipefail
+
+TARGET_DIR=$1
+
+# Validate target directory
+if [[ ! -d "$TARGET_DIR" ]]; then
+  echo.error "Error: $TARGET_DIR is not a directory."
+  exit 1
+fi
+
+# Build find command depending on subdir option
+if [[ "$scan_subdirectory" == "true" ]]; then
+  FIND_CMD=(find "$TARGET_DIR" -type f)
+else
+  FIND_CMD=(find "$TARGET_DIR" -maxdepth 1 -type f)
+fi
+
+# Collect all files sorted by modification time (newest first)
+mapfile -t FILES < <("${FIND_CMD[@]}" -printf "%T@ %p\n" | sort -nr | awk '{print $2}')
+
+TOTAL_FILES=${#FILES[@]}
+if (( TOTAL_FILES == 0 )); then
+  echo "No files found in $TARGET_DIR"
+  exit 0
+fi
+
+# Files to protect (minimum kept)
+PROTECT_COUNT=$(( min_to_keep < TOTAL_FILES ? min_to_keep : TOTAL_FILES ))
+PROTECT_FILES=("${FILES[@]:0:$PROTECT_COUNT}")
+
+# Turn protected files into a set
+declare -A PROTECTED
+for f in "${PROTECT_FILES[@]}"; do
+  # echo "protect $f"
+  PROTECTED["$f"]=1
+done
+
+# Now process old files except protected ones
+NOW=$(date +%s)
+for f in "${FILES[@]}"; do
+  # Check age
+  MTIME=$(stat -c %Y "$f")
+  AGE_DAYS=$(( (NOW - MTIME) / 86400 ))
+
+  #  Skip protected
+  if [[ -n "${PROTECTED[$f]:-}" ]]; then
+    echo.magenta "keep min   [age: $AGE_DAYS]: $f"
+    continue
+  fi
+
+  if (( AGE_DAYS > age_in_days )); then
+    echo.grey "delete old [age: $AGE_DAYS]: $f"
+    if [[ "$dry_run" != "true" ]]; then
+      (
+        set -x
+        rm -f -- "$f"
+      )
+    fi
+  else
+    echo.magenta "keep young [age: $AGE_DAYS]: $f"
+  fi
+done
