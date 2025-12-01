@@ -1,5 +1,27 @@
 #!/bin/bash
 
+usage() {
+  echo "Usage: $(basename "$0") [-h]"
+  echo "list status of jiras"
+}
+while getopts "h" arg; do
+  case $arg in
+  h)
+	usage
+	exit 0
+	;;
+  *)
+	usage
+	exit 1
+	;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+  usage
+  exit 0
+fi
+
 jira_projects=$(buildo-config '.jira.projects[]')
 myjira_home=$(buildo-config '.jira.home')
 myjira_home=${myjira_home:-$HOME}
