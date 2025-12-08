@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
 
-scan_subdirectory=false
+recursive=false
 dry_run=false
 age_in_days=30
 min_to_keep=1
+use_regex=false
+file_type=f
 
 usage() {
-  echo "Usage: $(basename "$0") [-h] [-s] [-d] [-a days] [-m minimum_to_keep] directory"
-  echo " -s            include subdirectory"
+  echo "Usage: $(basename "$0") [-h] [-r] [-d] [-a days] [-D] [-e] [-m minimum_to_keep] directory [name_filter]"
+  echo " -r            recursive"
   echo " -a   <days>   age in days, default: 30"
   echo " -m   <count>  minimum files to keep, default: 1"
+  echo " -e            name_filter is regex"
+  echo " -D            find directory instead of file"
   echo " -d            dry run"
 }
-while getopts "hsda:m:" arg; do
+while getopts "hrdDea:m:" arg; do
   case $arg in
     h)
       usage
@@ -24,8 +28,14 @@ while getopts "hsda:m:" arg; do
     d)
       dry_run=true
     ;;
-    s)
-      scan_subdirectory=true
+    r)
+      recursive=true
+      ;;
+    e)
+      use_regex=true
+      ;;
+    D)
+      file_type=d
     ;;
     a)
       age_in_days="$OPTARG"
@@ -37,14 +47,15 @@ while getopts "hsda:m:" arg; do
   esac
 done
 shift $((OPTIND - 1))
-if [[ $# -ne 1 ]]; then
+if [[ $# -lt 1 || $# -gt 2 ]]; then
   usage
   exit 0
 fi
 
-set -euo pipefail
-
 TARGET_DIR=$1
+name_filter=$2
+
+set -euo pipefail
 
 # Validate target directory
 if [[ ! -d "$TARGET_DIR" ]]; then
@@ -52,15 +63,25 @@ if [[ ! -d "$TARGET_DIR" ]]; then
   exit 1
 fi
 
-# Build find command depending on subdir option
-if [[ "$scan_subdirectory" == "true" ]]; then
-  FIND_CMD=(find "$TARGET_DIR" -type f)
-else
-  FIND_CMD=(find "$TARGET_DIR" -maxdepth 1 -type f)
+target_directory=$(realpath "$TARGET_DIR")
+
+find_options=("$target_directory")
+
+find_options+=(-mindepth 1)
+if [[ "$recursive" == "false" ]]; then
+  find_options+=(-maxdepth 1)
+fi
+find_options+=(-type "$file_type")
+if [[ -n "$name_filter" ]]; then
+  if [[ "$use_regex" == "true" ]]; then
+    find_options+=(-regextype posix-extended -regex "$target_directory/$name_filter")
+  else
+    find_options+=(-name "$name_filter")
+  fi
 fi
 
 # Collect all files sorted by modification time (newest first)
-mapfile -t FILES < <("${FIND_CMD[@]}" -printf "%T@ %p\n" | sort -nr | awk '{print $2}')
+mapfile -t FILES < <(find "${find_options[@]}" -printf "%T@ %p\n" | sort -nr | awk '{print $2}')
 
 TOTAL_FILES=${#FILES[@]}
 if (( TOTAL_FILES == 0 )); then
@@ -79,7 +100,7 @@ for f in "${PROTECT_FILES[@]}"; do
   PROTECTED["$f"]=1
 done
 
-# Now process old files except protected ones
+# process old files except protected ones
 NOW=$(date +%s)
 for f in "${FILES[@]}"; do
   # Check age
@@ -95,10 +116,18 @@ for f in "${FILES[@]}"; do
   if (( AGE_DAYS > age_in_days )); then
     echo.grey "delete old [age: $AGE_DAYS]: $f"
     if [[ "$dry_run" != "true" ]]; then
-      (
-        set -x
-        rm -f -- "$f"
-      )
+      if [[ "$file_type" == "d" ]]; then
+        # remove directory and its contents
+        (
+          set -x
+          rm -rf -- "$f"
+        )
+      else
+        (
+          set -x
+          rm -f -- "$f"
+        )
+      fi
     fi
   else
     echo.magenta "keep young [age: $AGE_DAYS]: $f"
