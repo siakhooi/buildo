@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.22.0
+Version:        0.23.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -53,6 +53,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Tue Dec 16 2025 Siak Hooi <siakhooi@gmail.com> - 0.23.0
+- buildo-anacron-exec add silent-on-success
+
 * Mon Dec 8 2025 Siak Hooi <siakhooi@gmail.com> - 0.22.0
 - my-jira -h, update buildo-housekeep-by-age
 

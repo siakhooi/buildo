@@ -33,7 +33,9 @@ readonly BUILDO_ANACRON_JOB_ID=$1
 
 shift
 
-working_home=$(buildo-config .anacron.working-home )
+silent_on_success=$(buildo-config .anacron.silent-on-success)
+
+working_home=$(buildo-config .anacron.working-home)
 working_home=${working_home:-$HOME/.buildo-anacron}
 
 BUILDO_ANACRON_JOB_HOME="$working_home/$BUILDO_ANACRON_JOB_ID"
@@ -61,6 +63,7 @@ exit_code=$?
 if [[ $exit_code == 0 ]]; then
   if [[ $highlight == "true" ]]; then
     result_text=$(echo.green -n "SUCCESS")
+    silent_on_success=false # always show if highlighted
   else
     result_text=$(echo.grey -n "SUCCESS")
   fi
@@ -73,7 +76,10 @@ if [[ -n $anacron_chown ]]; then
   chown --changes -R "$anacron_chown" "$BUILDO_ANACRON_JOB_HOME"
 fi
 
-message_user=$(buildo-config .anacron.message_user )
+if is-true "$silent_on_success" && [[ $exit_code == 0 ]]; then
+	exit 0
+fi
+message_user=$(buildo-config .anacron.message_user)
 if [[ -n $message_user ]]; then
   sudo -u "$message_user" buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
 else
