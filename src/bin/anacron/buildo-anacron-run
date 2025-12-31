@@ -4,11 +4,13 @@
 source  /usr/lib/buildo/buildo-init
 
 usage() {
-  echo "Usage: $(basename "$0") [-h] [-n]"
+  echo "Usage: $(basename "$0") [-h] [-n] [-p name]"
   echo "  -n  use network profile (call my-network-profile)"
+  echo "  -p name  specify profile name (default: current user name)"
 }
+profile_name=$(whoami)
 check_network_profile=false
-while getopts "hn" arg; do
+while getopts "hnp:" arg; do
   case $arg in
   h)
     usage
@@ -16,6 +18,9 @@ while getopts "hn" arg; do
     ;;
   n)
     check_network_profile=true
+    ;;
+  p)
+    profile_name="$OPTARG"
     ;;
   *)
     usage
@@ -28,8 +33,6 @@ if [[ $# -ne 0 ]]; then
   usage
   exit 0
 fi
-
-name=$(whoami)
 
 readonly anacrontab_home=$BUILDO_HOME/anacrontab
 working_home=$(buildo-config .anacron.working-home )
@@ -44,14 +47,14 @@ if $check_network_profile; then
   network_profile_bin=$(buildo-config .anacron.network-profile-bin )
   network_profile=$("$network_profile_bin")
   if [[ -n $network_profile ]]; then
-      name="${name}-${network_profile}"
+      profile_name="${profile_name}-${network_profile}"
   else
-      name="${name}-unknown"
+      profile_name="${profile_name}-unknown"
   fi
 fi
 
 readonly spool_directory="$working_home/spool"
-readonly anacrontab="$anacrontab_home/$name"
+readonly anacrontab="$anacrontab_home/$profile_name"
 
 if [[ ! -f $anacrontab ]]; then
   echo.error "anacrontab: $anacrontab: not found."
