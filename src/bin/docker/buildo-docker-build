@@ -11,7 +11,9 @@ fi
 readonly name=$1
 IMAGE_TAG=$name:latest
 
-home_path=$BUILDO_HOME/docker-build/$name
+root_path=$BUILDO_DOCKER_BUILD_HOME
+root_path=${root_path:-$BUILDO_HOME/docker-build}
+home_path=${root_path}/$name
 
 if [[ ! -d $home_path ]]; then
   echo.error "Directory $home_path does not exist."

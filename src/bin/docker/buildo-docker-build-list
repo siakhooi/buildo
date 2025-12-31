@@ -2,6 +2,8 @@
 # shellcheck disable=SC1091
 source  /usr/lib/buildo/buildo-init
 
+home_path=$BUILDO_DOCKER_BUILD_HOME
+home_path=${home_path:-$BUILDO_HOME/docker-build}
 readonly home_path=$BUILDO_HOME/docker-build
 
 if [[ -d $home_path ]]; then
