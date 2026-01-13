@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.25.0
+Version:        0.26.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -53,6 +53,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Tue Jan 13 2026 Siak Hooi <siakhooi@gmail.com> - 0.26.0
+- buildo-docker-build to support -r resource
+
 * Wed Dec 31 2025 Siak Hooi <siakhooi@gmail.com> - 0.25.0
 - buildo-docker-build to support BUILDO_DOCKER_BUILD_HOME environment variable
 
