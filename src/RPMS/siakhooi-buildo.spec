@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.26.0
+Version:        0.27.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -41,6 +41,7 @@ powertoys for builder
 %{_bindir}/buildo-git-pull
 %{_bindir}/buildo-housekeep-by-age
 %{_bindir}/buildo-message
+%{_bindir}/buildo-prepare
 %{_bindir}/buildo-proxy
 %{_bindir}/buildo-upgrade
 %{_bindir}/buildo-version
@@ -53,6 +54,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed Jan 14 2026 Siak Hooi <siakhooi@gmail.com> - 0.27.0
+- add buildo-prepare
+
 * Tue Jan 13 2026 Siak Hooi <siakhooi@gmail.com> - 0.26.0
 - buildo-docker-build to support -r resource
 

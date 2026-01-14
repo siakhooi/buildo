@@ -42,6 +42,7 @@ source <(buildo-completion)
 - `buildo-jira-{issue,status}-get`
 - `buildo-jira-curl`
 - `buildo-message`
+- `buildo-prepare`
 - `buildo-proxy`
 - `buildo-upgrade`
 - `buildo-version`

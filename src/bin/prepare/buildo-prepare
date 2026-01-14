@@ -1,0 +1,73 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-p profile] [-f]"
+	echo " -h            Show this help message"
+	echo " -p profile    Specify the prepare profile (default to current git repo name)"
+	echo " -f            Force overwrite of existing files"
+}
+profile=$(git-get -n)
+overwrite=false
+while getopts "hp:f" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	p)
+		profile=$OPTARG
+		;;
+	f)
+		overwrite=true
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+	usage
+	exit 0
+fi
+if $overwrite; then
+	cp_ptions=(-f)
+else
+	cp_ptions=(--update=older)
+fi
+
+if [[ -z $profile ]]; then
+	echo "Could not determine profile name, please specify it with -p"
+	exit 1
+fi
+
+mapfile -t buildo_prepare_roots < <(buildo-config '.prepare.roots[]')
+
+buildo_prepare_roots+=("$HOME/.buildo/prepare")
+
+for root in "${buildo_prepare_roots[@]}"; do
+	if [[ -d $root/$profile ]]; then
+		buildo_prepare_root=$root
+		break
+	fi
+done
+if [[ -z $buildo_prepare_root ]]; then
+	echo "Could not find prepare root for profile '$profile'"
+	echo "use -p to specify a correct profile (default to repo name)"
+	exit 1
+fi
+
+config_path="$buildo_prepare_root/$profile"
+
+gitignore_extra_exists=false
+[[ -f ./.gitignore-extra ]] && gitignore_extra_exists=true
+
+set -x
+find "$config_path" -maxdepth 1 -mindepth 1 -type d -exec cp -vr "${cp_ptions[@]}" {} ./ \;
+find "$config_path" -maxdepth 1 -mindepth 1 -type f ! -name 'buildo-prepare.yaml' -exec cp -v "${cp_ptions[@]}" {} ./ \;
+if ! $gitignore_extra_exists; then
+	echo "Appending .gitignore-extra to .gitignore"
+	echo >>./.gitignore
+	cat ./.gitignore-extra >>./.gitignore
+fi
