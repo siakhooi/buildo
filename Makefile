@@ -25,10 +25,6 @@ release:
 	scripts/release.sh
 
 deb-install:
-	apt install ./*.deb
+	sudo apt install ./*.deb
 deb-uninstall:
-	apt remove -y siakhooi-buildo
-rpm-install:
-	rpm -i ./*.rpm
-rpm-uninstall:
-	rpm -e siakhooi-buildo
+	sudo apt remove -y siakhooi-buildo
