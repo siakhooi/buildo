@@ -56,6 +56,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Fri Jan 30 2026 Siak Hooi <siakhooi@gmail.com> - 0.28.0
+- add buildo-backup, docker-clean
+
 * Wed Jan 14 2026 Siak Hooi <siakhooi@gmail.com> - 0.27.0
 - add buildo-prepare
 
