@@ -31,6 +31,7 @@ source <(buildo-completion)
 ## Binaries
 
 - `buildo-anacron-{exec,log,run,status}`
+- `buildo-backup`
 - `buildo-checker-{docker-usage,path-usage,space-left}`
 - `buildo-completion`
 - `buildo-config-{edit,set}`
@@ -46,6 +47,7 @@ source <(buildo-completion)
 - `buildo-proxy`
 - `buildo-upgrade`
 - `buildo-version`
+- `docker-clean`
 - `my-jira`
 - `pip-purge-all`
 

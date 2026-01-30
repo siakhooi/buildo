@@ -1,0 +1,63 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] config_name"
+}
+while getopts "h" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+	usage
+	exit 0
+fi
+
+readonly config_name=$1
+
+config=$(buildo-config .backup."$config_name")
+type=$(echo "$config" | yq -r '.type // ""')
+chown=$(echo "$config" | yq -r '.chown // ""')
+source_parent=$(echo "$config" | yq -r '.source.parent // ""')
+source_name=$(echo "$config" | yq -r '.source.name // ""')
+target_parent=$(echo "$config" | yq -r '.target.parent // ""')
+target_name=$(echo "$config" | yq -r '.target.name // ""')
+		excludesTempFile=$(mktemp --tmpir "$(basename "$0")-XXXXXXXXXX")
+
+echo "$config" | yq -r '.excludes[] // ""'>"$excludesTempFile"
+set -ex
+
+if [[ -n $chown ]]; then
+	chown -R "$chown" "$source_parent/$source_name"
+fi
+
+timestamp=${BUILDO_ANACRON_JOB_TIMESTAMP:-$(date +%Y%m%d%H%M%S.%N)}
+mkdir -p "${target_parent}"
+backup_file=${target_parent}/${target_name}.${timestamp}
+
+cd "$source_parent" || {
+	echo.error "Fail to enter $source_parent"
+	exit 2
+}
+extra_options=()
+
+if [[ $type == "zip" ]]; then
+	if [[ -s $excludesTempFile ]]; then
+		extra_options+=("-x@$excludesTempFile")
+	fi
+	zip -r "${backup_file}.zip" "${extra_options[@]}" "$source_name"
+else
+	if [[ -s $excludesTempFile ]]; then
+		extra_options+=(-X "$excludesTempFile")
+	fi
+
+	tar zcvf "${backup_file}.tgz" "${extra_options[@]}" "$source_name"
+fi

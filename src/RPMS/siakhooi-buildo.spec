@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.27.0
+Version:        0.28.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -27,6 +27,7 @@ powertoys for builder
 %{_bindir}/buildo-anacron-log
 %{_bindir}/buildo-anacron-run
 %{_bindir}/buildo-anacron-status
+%{_bindir}/buildo-backup
 %{_bindir}/buildo-checker-docker-usage
 %{_bindir}/buildo-checker-path-usage
 %{_bindir}/buildo-checker-space-left
@@ -48,6 +49,7 @@ powertoys for builder
 %{_bindir}/buildo-jira-curl
 %{_bindir}/buildo-jira-issue-get
 %{_bindir}/buildo-jira-status-get
+%{_bindir}/docker-clean
 %{_bindir}/my-jira
 %{_bindir}/pip-purge-all
 %{_libdir}/buildo/buildo-init

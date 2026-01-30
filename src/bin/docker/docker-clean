@@ -1,0 +1,72 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D]"
+	echo " -h   display this help message"
+	echo " -s   remove stopped containers"
+	echo " -A   remove all images"
+	echo " -D   remove dangling images"
+}
+action=
+while getopts "hsAD" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	s)
+		if [[ -n $action ]] && [[ $action != 'stop_container' ]]; then
+			echo.error "-s is the only option"
+			usage
+			exit 1
+		fi
+		action=stop_container
+		;;
+	A)
+		if [[ -n $action ]] && [[ $action != 'all_images' ]]; then
+			echo.error "-A is the only option"
+			usage
+			exit 1
+		fi
+		action=all_images
+		;;
+	D)
+		if [[ -n $action ]] && [[ $action != 'dangling_images' ]]; then
+			echo.error "-D is the only option"
+			usage
+			exit 1
+		fi
+		action=dangling_images
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+	usage
+	exit 0
+fi
+if [[ -z $action ]]; then
+	usage
+	exit
+fi
+
+if [[ $action == 'stop_container' ]]; then
+	(
+		set -x
+		docker container prune -f
+	)
+elif [[ $action == 'all_images' ]]; then
+	(
+		set -x
+		docker images -a -q | xargs -I {} docker image rm -f {}
+	)
+elif [[ $action == 'dangling_images' ]]; then
+	(
+		set -x
+		docker image prune -f
+	)
+fi
