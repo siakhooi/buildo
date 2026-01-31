@@ -59,7 +59,7 @@ for git_repo_path in "${git_repos[@]}"; do
 	echo "Git Pull: $git_repo_path"
 	(
 		set -x
-		git pull --rebase
+		git pull
 		exit $?
 	)
 	pull_status=$?

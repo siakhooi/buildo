@@ -1,14 +1,15 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D]"
+	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-V]"
 	echo " -h   display this help message"
 	echo " -s   remove stopped containers"
 	echo " -A   remove all images"
 	echo " -D   remove dangling images"
+	echo " -V   stop and remove all devcontainers containers"
 }
 action=
-while getopts "hsAD" arg; do
+while getopts "hsADV" arg; do
 	case $arg in
 	h)
 		usage
@@ -37,6 +38,14 @@ while getopts "hsAD" arg; do
 			exit 1
 		fi
 		action=dangling_images
+		;;
+	V)
+		if [[ -n $action ]] && [[ $action != 'remove_devcontainers' ]]; then
+			echo.error "-V is the only option"
+			usage
+			exit 1
+		fi
+		action=remove_devcontainers
 		;;
 	*)
 		usage
@@ -69,4 +78,11 @@ elif [[ $action == 'dangling_images' ]]; then
 		set -x
 		docker image prune -f
 	)
+
+elif [[ $action == 'remove_devcontainers' ]]; then
+	(
+		set -x
+		docker ps -q -a --filter 'label=devcontainer.config_file' | xargs -r docker rm -f
+	)
+
 fi
