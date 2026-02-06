@@ -30,7 +30,7 @@ source_parent=$(echo "$config" | yq -r '.source.parent // ""')
 source_name=$(echo "$config" | yq -r '.source.name // ""')
 target_parent=$(echo "$config" | yq -r '.target.parent // ""')
 target_name=$(echo "$config" | yq -r '.target.name // ""')
-		excludesTempFile=$(mktemp --tmpir "$(basename "$0")-XXXXXXXXXX")
+excludesTempFile=$(mktemp --tmpdir "$(basename "$0")-XXXXXXXXXX")
 
 echo "$config" | yq -r '.excludes[] // ""'>"$excludesTempFile"
 set -ex
