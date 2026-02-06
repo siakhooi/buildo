@@ -49,6 +49,7 @@ source <(buildo-completion)
 - `buildo-version`
 - `docker-clean`
 - `my-jira`
+- `newman-collection`
 - `pip-purge-all`
 
 ### Init functions
