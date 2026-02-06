@@ -1,0 +1,73 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-l] [-t] newman-collection-file"
+	echo " -l   list requests"
+	echo " -t   show tree view of collection"
+}
+action=
+while getopts "hlt" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	l)
+		action=list
+		;;
+	t)
+		action=tree
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+	usage
+	exit 0
+fi
+file="$1"
+
+if [[ $action == list ]]; then
+	jq -r 'recurse(.item[]?)
+        |select(.request!=null)
+        |.request
+        |[.url.raw, (.method|("      " + .)[-6:])]
+        |sort
+        |join(" ")' "$file" |
+		uniq |
+		highlight.green 'GET' |
+		highlight.yellow 'POST' |
+		highlight.yellow 'PUT' |
+		highlight.yellow 'PATCH' |
+		highlight.red 'DELETE'
+
+elif [[ $action == tree ]]; then
+	print_tree() {
+		local data="$1"
+		local indent="$2"
+
+		name=$(jq -r '.name //"<no name>"' <<<"$data")
+		method=$(jq -r '.request?.method' <<<"$data")
+		url=$(jq -r '.request?.url?.raw' <<<"$data")
+		method=$(echo -n "${method//null/}" | highlight.yellow "POST" | highlight.yellow "PUT" | highlight.yellow "PATCH" | highlight.green "GET" | highlight.red "DELETE")
+		url=$(echo.grey -n "${url//null/}")
+
+		printf "%s- %s %s %s\n" "$indent" "$name" "$method" "$url"
+
+		(jq -c '.item[]?' <<<"$data") | while read -r item; do
+			print_tree "$item" "$indent  "
+		done
+	}
+
+	data=$(jq -c . "$file")
+
+	print_tree "$data"
+
+else
+	usage
+	exit 0
+fi

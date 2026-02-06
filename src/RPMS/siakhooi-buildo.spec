@@ -51,6 +51,7 @@ powertoys for builder
 %{_bindir}/buildo-jira-status-get
 %{_bindir}/docker-clean
 %{_bindir}/my-jira
+%{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
@@ -58,6 +59,7 @@ powertoys for builder
 %changelog
 * Fri Feb 2 2026 Siak Hooi <siakhooi@gmail.com> - 0.30.0
 - fix buildo-backup bug
+- add newman-collection
 
 * Sat Jan 31 2026 Siak Hooi <siakhooi@gmail.com> - 0.29.0
 - add docker-clean -V, remove buildo-git-pull --rebase
