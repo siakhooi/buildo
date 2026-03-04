@@ -1,0 +1,77 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] configFileFullPath"
+}
+while getopts "h" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+	usage
+	exit 0
+fi
+
+configFileFullPath=$1
+
+readarray files < <(yq e -o=j -I=0 '.files[]' "$configFileFullPath")
+
+max_col=$(tput cols)
+[[ $max_col -lt 102 ]] || max_col=102
+max_col=$((max_col - 4))
+
+for f in "${files[@]}"; do
+	name=$(echo "$f" | yq e '.name' -)
+	from=$(echo "$f" | yq e '.from' -)
+	to=$(echo "$f" | yq e '.to' -)
+	from_type=$(echo "$f" | yq e '.from-type // ""' -)
+	copier=$(echo "$f" | yq e '.copier // ""' -)
+	path1=$(echo "$f" | yq e '.path1 // ""' -)
+	path2=$(echo "$f" | yq e '.path2 // ""' -)
+	purge_target=$(echo "$f" | yq e '.purge // "Y"' -)
+
+	if [[ $from_type == 'artifact' ]]; then
+		from=$(ore-artifact -l "$from")
+	fi
+
+	printf "%-${max_col}s" "Copying $name/$(basename "$from")"
+	if [[ -n "$copier" ]]; then
+		if command -v "$copier" >/dev/null; then
+			if "$copier" "$from" "$to" "$path1" "$path2"; then
+				echo.green "[OK - Copier]"
+			else
+				echo.error "[ERR]"
+			fi
+		else
+			echo.error "[ERR - Copier not executable]"
+		fi
+	elif [[ -d $from ]]; then
+		mkdir -p -v "$to"
+		is-true "$purge_target" && rm -rf "${to:?}"/*
+		if cp -rf "$from" "$to"; then
+			echo.green "[OK - Directory]"
+		else
+			echo.error "[ERR]"
+		fi
+	elif [[ -f $from ]]; then
+		dirName=$(dirname "$to")
+		mkdir -p -v "$dirName"
+		if cp "$from" "$to"; then
+			echo.green "[OK]"
+		else
+			echo.error "[ERR]"
+		fi
+	else
+		echo.error "[ERR: Source is not File or Directory]"
+	fi
+
+done

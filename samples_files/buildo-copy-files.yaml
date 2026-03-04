@@ -1,0 +1,4 @@
+files:
+  - name: copy-name-1
+    from: /path/to/file
+    to: /path/to/destination/file

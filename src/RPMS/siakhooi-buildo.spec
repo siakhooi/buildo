@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.30.0
+Version:        0.31.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -35,6 +35,7 @@ powertoys for builder
 %{_bindir}/buildo-config
 %{_bindir}/buildo-config-edit
 %{_bindir}/buildo-config-set
+%{_bindir}/buildo-copy-files
 %{_bindir}/buildo-docker-build
 %{_bindir}/buildo-docker-build-list
 %{_bindir}/buildo-docker-images
@@ -57,6 +58,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed Mar 4 2026 Siak Hooi <siakhooi@gmail.com> - 0.31.0
+- add buildo-copy-files
+
 * Fri Feb 2 2026 Siak Hooi <siakhooi@gmail.com> - 0.30.0
 - fix buildo-backup bug
 - add newman-collection
