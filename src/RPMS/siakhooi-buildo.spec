@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.31.0
+Version:        0.32.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -58,6 +58,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Thu Mar 5 2026 Siak Hooi <siakhooi@gmail.com> - 0.32.0
+- add -M, -N, -V options to docker-clean
+
 * Wed Mar 4 2026 Siak Hooi <siakhooi@gmail.com> - 0.31.0
 - add buildo-copy-files
 

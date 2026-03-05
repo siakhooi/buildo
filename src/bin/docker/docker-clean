@@ -1,15 +1,18 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-V]"
+	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-V] [-B] [-N] [-M]"
 	echo " -h   display this help message"
 	echo " -s   remove stopped containers"
 	echo " -A   remove all images"
 	echo " -D   remove dangling images"
 	echo " -V   stop and remove all devcontainers containers"
+	echo " -B   remove all build cache"
+	echo " -N   remove all networks"
+	echo " -M   remove all volumes"
 }
 action=
-while getopts "hsADV" arg; do
+while getopts "hsADVBNM" arg; do
 	case $arg in
 	h)
 		usage
@@ -46,6 +49,30 @@ while getopts "hsADV" arg; do
 			exit 1
 		fi
 		action=remove_devcontainers
+		;;
+	B)
+		if [[ -n $action ]] && [[ $action != 'remove_build_cache' ]]; then
+			echo.error "-B is the only option"
+			usage
+			exit 1
+		fi
+		action=remove_build_cache
+		;;
+	N)
+		if [[ -n $action ]] && [[ $action != 'remove_networks' ]]; then
+			echo.error "-N is the only option"
+			usage
+			exit 1
+		fi
+		action=remove_networks
+		;;
+	M)
+		if [[ -n $action ]] && [[ $action != 'remove_volumes' ]]; then
+			echo.error "-M is the only option"
+			usage
+			exit 1
+		fi
+		action=remove_volumes
 		;;
 	*)
 		usage
@@ -85,4 +112,19 @@ elif [[ $action == 'remove_devcontainers' ]]; then
 		docker ps -q -a --filter 'label=devcontainer.config_file' | xargs -r docker rm -f
 	)
 
+elif [[ $action == 'remove_build_cache' ]]; then
+	(
+		set -x
+		docker builder prune --all --force
+	)
+elif [[ $action == 'remove_networks' ]]; then
+	(
+		set -x
+		docker network prune -f
+	)
+elif [[ $action == 'remove_volumes' ]]; then
+	(
+		set -x
+		docker volume prune -f
+	)
 fi
