@@ -18,9 +18,6 @@ un-all: undeploy clean
 all-deb: clean set-version build-deb deb-install
 all-rpm: clean set-version build-rpm rpm-install
 
-commit:
-	scripts/git-commit-and-push.sh
-
 release:
 	scripts/release.sh
 
