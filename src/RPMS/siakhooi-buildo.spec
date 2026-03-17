@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.32.0
+Version:        0.33.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -28,6 +28,7 @@ powertoys for builder
 %{_bindir}/buildo-anacron-run
 %{_bindir}/buildo-anacron-status
 %{_bindir}/buildo-backup
+%{_bindir}/buildo-auto-commit
 %{_bindir}/buildo-checker-docker-usage
 %{_bindir}/buildo-checker-path-usage
 %{_bindir}/buildo-checker-space-left
@@ -58,6 +59,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Tue Mar 17 2026 Siak Hooi <siakhooi@gmail.com> - 0.33.0
+- add buildo-auto-commit
+
 * Thu Mar 5 2026 Siak Hooi <siakhooi@gmail.com> - 0.32.0
 - add -M, -N, -V options to docker-clean
 

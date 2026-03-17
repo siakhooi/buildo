@@ -31,6 +31,7 @@ source <(buildo-completion)
 ## Binaries
 
 - `buildo-anacron-{exec,log,run,status}`
+- `buildo-auto-commit`
 - `buildo-backup`
 - `buildo-checker-{docker-usage,path-usage,space-left}`
 - `buildo-completion`
