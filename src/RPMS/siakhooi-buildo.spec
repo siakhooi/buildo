@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.33.0
+Version:        0.34.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -59,6 +59,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed Apr 1 2026 Siak Hooi <siakhooi@gmail.com> - 0.34.0
+- buildo-message -t option to show today's messages
+
 * Tue Mar 17 2026 Siak Hooi <siakhooi@gmail.com> - 0.33.0
 - add buildo-auto-commit
 

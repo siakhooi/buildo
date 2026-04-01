@@ -1,19 +1,20 @@
 #!/bin/bash
 
 readonly message_directory=$HOME/.buildo-message
-readonly message_time_file=$HOME/.buildo-message-time
+message_time_file=$HOME/.buildo-message-time
 
 usage() {
   echo "Usage: $(basename "$0") [-h] [OPTION]"
   echo "Options:"
   echo "  -a TITLE MESSAGE    Add a message item with title and message"
   echo "  -s                  Show new messages"
+  echo "  -t                  show today's messages"
   echo "  -p                  print file name, for -s option"
   echo "  -h, --help          Show this help message"
 }
 action=
 print_file=false
-while getopts "hsap" arg; do
+while getopts "hsatp" arg; do
   case $arg in
   h)
     usage
@@ -34,6 +35,16 @@ while getopts "hsap" arg; do
       exit 1
     fi
     action=add
+    ;;
+  t)
+    if [[ -n $action ]] && [[ $action != "show" ]]; then
+      echo.error "Only one action can be specified"
+      usage
+      exit 1
+    fi
+    action=show
+    message_time_file=$(mktemp --tmpdir "$(basename "$0")-XXXXXXXXXX")
+    touch -d "$(date +%Y-%m-%d)" "$message_time_file"
     ;;
   p)
     print_file=true
