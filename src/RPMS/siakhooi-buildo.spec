@@ -52,6 +52,7 @@ powertoys for builder
 %{_bindir}/buildo-jira-issue-get
 %{_bindir}/buildo-jira-status-get
 %{_bindir}/docker-clean
+%{_bindir}/docker-images
 %{_bindir}/my-jira
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all

@@ -1,0 +1,52 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-n]"
+	echo " -h   display this help message"
+	echo " -n   list docker images by name only"
+  echo " -s   list docker images by size"
+  echo " -a   list docker images by age"
+}
+action=
+while getopts "hnsa" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	n)
+		action=list_images_name_only
+		;;
+  s)
+    action=list_images_by_size
+    ;;
+  a)
+    action=list_images_by_age
+    ;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+	usage
+	exit 0
+fi
+
+if [[ -z $action ]]; then
+	usage
+	exit
+fi
+
+if [[ $action == "list_images_name_only" ]]; then
+	docker images --format "{{.Repository}}:{{.Tag}}" | sort -u
+
+elif [[ $action == "list_images_by_size" ]]; then
+  docker images --format "{{.ID}}\t{{.Size}}\t{{.CreatedSince}}\t{{.Repository}}:{{.Tag}}" | sort -k 2 -h
+
+elif [[ $action == "list_images_by_age" ]]; then
+  docker image ls --format "{{.ID}}: {{.CreatedSince}}\t{{.Repository}}:{{.Tag}}"
+
+fi
