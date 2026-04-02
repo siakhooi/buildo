@@ -1,18 +1,19 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-V] [-B] [-N] [-M]"
+	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-d] [-V] [-B] [-N] [-M]"
 	echo " -h   display this help message"
 	echo " -s   remove stopped containers"
 	echo " -A   remove all images"
 	echo " -D   remove dangling images"
+  echo " -d   remove devcontainer images"
 	echo " -V   stop and remove all devcontainers containers"
 	echo " -B   remove all build cache"
 	echo " -N   remove all networks"
 	echo " -M   remove all volumes"
 }
 action=
-while getopts "hsADVBNM" arg; do
+while getopts "hsADVBNMd" arg; do
 	case $arg in
 	h)
 		usage
@@ -42,6 +43,15 @@ while getopts "hsADVBNM" arg; do
 		fi
 		action=dangling_images
 		;;
+  d)
+    if [[ -n $action ]] && [[ $action != 'remove_devcontainer_images' ]]; then
+      echo.error "-d is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_devcontainer_images
+    ;;
+
 	V)
 		if [[ -n $action ]] && [[ $action != 'remove_devcontainers' ]]; then
 			echo.error "-V is the only option"
@@ -112,6 +122,11 @@ elif [[ $action == 'remove_devcontainers' ]]; then
 		docker ps -q -a --filter 'label=devcontainer.config_file' | xargs -r docker rm -f
 	)
 
+elif [[ $action == 'remove_devcontainer_images' ]]; then
+  (
+    set -x
+    docker images --filter=reference='*vsc-*' -q | xargs -r docker image rmi
+  )
 elif [[ $action == 'remove_build_cache' ]]; then
 	(
 		set -x
