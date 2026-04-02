@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.34.0
+Version:        0.35.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -60,6 +60,11 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Thu Apr 2 2026 Siak Hooi <siakhooi@gmail.com> - 0.35.0
+- add docker-clean -d
+- remove buildo-upgrade pip, poetry
+- add docker-images
+
 * Wed Apr 1 2026 Siak Hooi <siakhooi@gmail.com> - 0.34.0
 - buildo-message -t option to show today's messages
 
