@@ -50,6 +50,8 @@ source <(buildo-completion)
 - `buildo-upgrade`
 - `buildo-version`
 - `docker-clean`
+- `docker-images`
+- `docker-stats`
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`

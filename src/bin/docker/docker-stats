@@ -1,0 +1,64 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-s] [-m]"
+	echo " -h   display this help message"
+	echo " -s  stream live stats"
+	echo " -m  sort by memory usage"
+}
+action=
+while getopts "hsm" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	s)
+		if [[ -n $action ]] && [[ $action != 'stream' ]]; then
+			echo.error "-s is the only option"
+			usage
+			exit 1
+		fi
+		action=stream
+		;;
+	m)
+		if [[ -n $action ]] && [[ $action != 'sort_by_memory' ]]; then
+			echo.error "-m is the only option"
+			usage
+			exit 1
+		fi
+		action=sort_by_memory
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+	usage
+	exit 0
+fi
+if [[ -z $action ]]; then
+	action='no-stream'
+fi
+
+if [[ $action == 'stream' ]]; then
+	(
+		set -x
+		docker stats
+	)
+
+elif [[ $action == 'no-stream' ]]; then
+	(
+		set -x
+		docker stats --no-stream
+	)
+
+elif [[ $action == 'sort_by_memory' ]]; then
+	(
+		set -x
+		docker stats --no-stream --format "table {{.Name}}\t{{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}" | sort -k4 -h
+	)
+fi
