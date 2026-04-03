@@ -38,6 +38,7 @@ source <(buildo-completion)
 - `buildo-config-{edit,set}`
 - `buildo-config`
 - `buildo-docker-{build,build-list,images}`
+- `buildo-expiring`
 - `buildo-git-pull`
 - `buildo-github-release-latest-get`
 - `buildo-housekeep-by-age`

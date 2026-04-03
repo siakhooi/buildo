@@ -1,0 +1,35 @@
+#!/bin/bash
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] date message"
+	echo "  date: in format YYYY-MM-DD"
+	echo "  message: message to display"
+}
+while getopts "h" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 2 ]]; then
+	usage
+	exit 0
+fi
+date=$1
+message=$2
+
+# $date is in format YYYY-MM-DD, check if it is after today, exit 1, else exit 0
+if [[ $(date -d "$date" +%s) -lt $(date +%s) ]]; then
+	echo.error "The date $date has expired: $message."
+	exit 1
+else
+	echo.green "OK: $message"
+	exit 0
+fi
