@@ -125,7 +125,7 @@ elif [[ $action == 'remove_devcontainers' ]]; then
 elif [[ $action == 'remove_devcontainer_images' ]]; then
   (
     set -x
-    docker images --filter=reference='*vsc-*' -q | xargs -r docker image rmi
+    docker images --filter=reference='*vsc-*' --format '{{.Repository}}:{{.Tag}}' | xargs -r docker image rmi
   )
 elif [[ $action == 'remove_build_cache' ]]; then
 	(
