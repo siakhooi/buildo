@@ -1,48 +1,58 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage: $(basename "$0") [-h] [-s] [-A] [-D] [-d] [-V] [-B] [-N] [-M]"
-	echo " -h   display this help message"
-	echo " -s   remove stopped containers"
-	echo " -A   remove all images"
-	echo " -D   remove dangling images"
-  echo " -d   remove devcontainer images"
-	echo " -V   stop and remove all devcontainers containers"
-	echo " -B   remove all build cache"
-	echo " -N   remove all networks"
-	echo " -M   remove all volumes"
+  echo "Usage: $(basename "$0") [-h] [-s] [-S] [-A] [-D] [-d] [-V] [-B] [-N] [-M]"
+  echo " -h   display this help message"
+  echo " -s   remove stopped containers"
+  echo " -D   remove dangling images"
+  echo " -d   remove unused devcontainer images"
+  echo " -V   stopped and remove all devcontainers containers"
+  echo " -S   stopped and remove all containers"
+  echo " -B   remove all build cache"
+  echo " -N   remove all networks"
+  echo " -M   remove all volumes"
+  echo " -A   remove all images (WARNING: this will remove all images, including those used by running containers)"
 }
 action=
-while getopts "hsADVBNMd" arg; do
-	case $arg in
-	h)
-		usage
-		exit 0
-		;;
-	s)
-		if [[ -n $action ]] && [[ $action != 'stop_container' ]]; then
-			echo.error "-s is the only option"
-			usage
-			exit 1
-		fi
-		action=stop_container
-		;;
-	A)
-		if [[ -n $action ]] && [[ $action != 'all_images' ]]; then
-			echo.error "-A is the only option"
-			usage
-			exit 1
-		fi
-		action=all_images
-		;;
-	D)
-		if [[ -n $action ]] && [[ $action != 'dangling_images' ]]; then
-			echo.error "-D is the only option"
-			usage
-			exit 1
-		fi
-		action=dangling_images
-		;;
+while getopts "hsSADVBNMd" arg; do
+  case $arg in
+  h)
+    usage
+    exit 0
+    ;;
+  s)
+    if [[ -n $action ]] && [[ $action != 'stop_container' ]]; then
+      echo.error "-s is the only option"
+      usage
+      exit 1
+    fi
+    action=stop_container
+    ;;
+  S)
+    if [[ -n $action ]] && [[ $action != 'stop_and_remove_all_containers' ]]; then
+      echo.error "-S is the only option"
+      usage
+      exit 1
+    fi
+    action=stop_and_remove_all_containers
+    ;;
+
+  A)
+    if [[ -n $action ]] && [[ $action != 'all_images' ]]; then
+      echo.error "-A is the only option"
+      usage
+      exit 1
+    fi
+    action=all_images
+    ;;
+  D)
+    if [[ -n $action ]] && [[ $action != 'dangling_images' ]]; then
+      echo.error "-D is the only option"
+      usage
+      exit 1
+    fi
+    action=dangling_images
+    ;;
   d)
     if [[ -n $action ]] && [[ $action != 'remove_devcontainer_images' ]]; then
       echo.error "-d is the only option"
@@ -52,94 +62,97 @@ while getopts "hsADVBNMd" arg; do
     action=remove_devcontainer_images
     ;;
 
-	V)
-		if [[ -n $action ]] && [[ $action != 'remove_devcontainers' ]]; then
-			echo.error "-V is the only option"
-			usage
-			exit 1
-		fi
-		action=remove_devcontainers
-		;;
-	B)
-		if [[ -n $action ]] && [[ $action != 'remove_build_cache' ]]; then
-			echo.error "-B is the only option"
-			usage
-			exit 1
-		fi
-		action=remove_build_cache
-		;;
-	N)
-		if [[ -n $action ]] && [[ $action != 'remove_networks' ]]; then
-			echo.error "-N is the only option"
-			usage
-			exit 1
-		fi
-		action=remove_networks
-		;;
-	M)
-		if [[ -n $action ]] && [[ $action != 'remove_volumes' ]]; then
-			echo.error "-M is the only option"
-			usage
-			exit 1
-		fi
-		action=remove_volumes
-		;;
-	*)
-		usage
-		exit 1
-		;;
-	esac
+  V)
+    if [[ -n $action ]] && [[ $action != 'remove_devcontainers' ]]; then
+      echo.error "-V is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_devcontainers
+    ;;
+  B)
+    if [[ -n $action ]] && [[ $action != 'remove_build_cache' ]]; then
+      echo.error "-B is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_build_cache
+    ;;
+  N)
+    if [[ -n $action ]] && [[ $action != 'remove_networks' ]]; then
+      echo.error "-N is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_networks
+    ;;
+  M)
+    if [[ -n $action ]] && [[ $action != 'remove_volumes' ]]; then
+      echo.error "-M is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_volumes
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+  esac
 done
 shift $((OPTIND - 1))
 if [[ $# -ne 0 ]]; then
-	usage
-	exit 0
+  usage
+  exit 0
 fi
 if [[ -z $action ]]; then
-	usage
-	exit
+  usage
+  exit
 fi
 
 if [[ $action == 'stop_container' ]]; then
-	(
-		set -x
-		docker container prune -f
-	)
+  (
+    set -x
+    docker container prune -f
+  )
 elif [[ $action == 'all_images' ]]; then
-	(
-		set -x
-		docker images -a -q | xargs -I {} docker image rm -f {}
-	)
+  (
+    set -x
+    docker images -a -q | xargs -I {} docker image rm -f {}
+  )
 elif [[ $action == 'dangling_images' ]]; then
-	(
-		set -x
-		docker image prune -f
-	)
-
+  (
+    set -x
+    docker image prune -f
+  )
+elif [[ $action == 'stop_and_remove_all_containers' ]]; then
+  (
+    set -x
+    docker ps -q -a | xargs -r docker rm -f
+  )
 elif [[ $action == 'remove_devcontainers' ]]; then
-	(
-		set -x
-		docker ps -q -a --filter 'label=devcontainer.config_file' | xargs -r docker rm -f
-	)
-
+  (
+    set -x
+    docker ps -q -a --filter 'label=devcontainer.config_file' | xargs -r docker rm -f
+  )
 elif [[ $action == 'remove_devcontainer_images' ]]; then
   (
     set -x
-    docker images --filter=reference='*vsc-*' --format '{{.Repository}}:{{.Tag}}' | xargs -r docker image rmi
+    docker images '--filter=reference=*vsc-*' --format '{{.Repository}}' | sort -u | comm -23 - <(docker ps -a --format '{{.Image}}' | sort -u) | xargs -r docker image rmi
   )
 elif [[ $action == 'remove_build_cache' ]]; then
-	(
-		set -x
-		docker builder prune --all --force
-	)
+  (
+    set -x
+    docker builder prune --all --force
+  )
 elif [[ $action == 'remove_networks' ]]; then
-	(
-		set -x
-		docker network prune -f
-	)
+  (
+    set -x
+    docker network prune -f
+  )
 elif [[ $action == 'remove_volumes' ]]; then
-	(
-		set -x
-		docker volume prune -f
-	)
+  (
+    set -x
+    docker volume prune -f
+  )
 fi
