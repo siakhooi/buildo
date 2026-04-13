@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage() {
-  echo "Usage: $(basename "$0") [-h] [-s] [-S] [-A] [-D] [-d] [-V] [-B] [-N] [-M]"
+  echo "Usage: $(basename "$0") [-h] [-s] [-S] [-A] [-D] [-d] [-V] [-B] [-N] [-M] [-p repo_prefix]"
   echo " -h   display this help message"
   echo " -s   remove stopped containers"
   echo " -D   remove dangling images"
@@ -12,9 +12,11 @@ usage() {
   echo " -N   remove all networks"
   echo " -M   remove all volumes"
   echo " -A   remove all images (WARNING: this will remove all images, including those used by running containers)"
+  echo " -p repo_prefix   remove images with name prefixed with repo_prefix"
 }
 action=
-while getopts "hsSADVBNMd" arg; do
+repo_prefix=
+while getopts "hsSADVBNMd:p:" arg; do
   case $arg in
   h)
     usage
@@ -94,6 +96,15 @@ while getopts "hsSADVBNMd" arg; do
     fi
     action=remove_volumes
     ;;
+  p)
+    if [[ -n $action ]] && [[ $action != 'remove_images_by_prefix' ]]; then
+      echo.error "-p is the only option"
+      usage
+      exit 1
+    fi
+    action=remove_images_by_prefix
+    repo_prefix=$OPTARG
+    ;;
   *)
     usage
     exit 1
@@ -155,4 +166,12 @@ elif [[ $action == 'remove_volumes' ]]; then
     set -x
     docker volume prune -f
   )
+elif [[ $action == 'remove_images_by_prefix' ]]; then
+  (
+    set -x
+    docker images --format '{{.Repository}}:{{.Tag}}' | grep "^${repo_prefix}" | xargs -r docker image rm -f
+  )
+else
+  echo.error "unknown action: $action"
+  exit 1
 fi
