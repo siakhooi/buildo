@@ -1,0 +1,9 @@
+repo: siakhooi/rpms
+branch: main
+git_commit_user: buildo
+git_commit_email: buildo@siakhooi.github.io
+git_commit_message: "buildo: Auto deploy"
+
+files:
+  - source: siakhooi-buildo-0.36.0-1.fc43.noarch.rpm
+    target: docs/siakhooi-buildo-0.36.0-1.fc43.noarch.rpm

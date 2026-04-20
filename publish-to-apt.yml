@@ -1,0 +1,9 @@
+repo: siakhooi/apt
+branch: main
+git_commit_user: buildo
+git_commit_email: buildo@siakhooi.github.io
+git_commit_message: "buildo: Auto deploy"
+
+files:
+  - source: siakhooi-buildo_0.36.0_amd64.deb
+    target: docs/pool/main/binary-amd64/siakhooi-buildo_0.36.0_amd64.deb
