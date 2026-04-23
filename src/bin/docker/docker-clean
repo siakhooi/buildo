@@ -16,7 +16,7 @@ usage() {
 }
 action=
 repo_prefix=
-while getopts "hsSADVBNMd:p:" arg; do
+while getopts "hsSADVBNMdp:" arg; do
   case $arg in
   h)
     usage
