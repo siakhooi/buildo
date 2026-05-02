@@ -5,5 +5,6 @@ git_commit_email: buildo@siakhooi.github.io
 git_commit_message: "buildo: Auto deploy"
 
 files:
-  - source: siakhooi-buildo_0.37.1_amd64.deb
-    target: docs/pool/main/binary-amd64/siakhooi-buildo_0.37.1_amd64.deb
+  - source: siakhooi-buildo_*_amd64.deb
+    target: docs/pool/main/binary-amd64/
+    items: 1
