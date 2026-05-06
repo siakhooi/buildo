@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.37.1
+Version:        0.38.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -63,6 +63,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Wed May 6 2026 Siak Hooi <siakhooi@gmail.com> - 0.38.0
+- add buildo-git-fetch
+
 * Fri Apr 24 2026 Siak Hooi <siakhooi@gmail.com> - 0.37.1
 - fix docker-clean -d
 
