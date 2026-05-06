@@ -1,0 +1,119 @@
+#!/bin/bash
+
+set -euo pipefail
+usage() {
+  echo "Usage: $(basename "$0") [-h] configFile"
+  echo " -h   show this help message"
+}
+
+while getopts "h" arg; do
+  case $arg in
+  h)
+    usage
+    exit 0
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 1 ]]; then
+  usage
+  exit 0
+fi
+
+readonly configFile="$1"
+if [[ ! -f "$configFile" ]]; then
+  echo.error "Error: config file '$configFile' does not exist"
+  exit 1
+fi
+
+if ! command -v yq >/dev/null 2>&1; then
+  echo.error "Error: yq command not found"
+  exit 1
+fi
+
+run_hooks() {
+  local hookType="$1"
+  local repoDir="$2"
+  local hookCount=0
+  local i
+  local hookCmd
+
+  hookCount=$(yq eval ".$hookType | length" "$configFile")
+  if [[ "$hookCount" == "null" ]]; then
+    return 0
+  fi
+
+  for ((i = 0; i < hookCount; i++)); do
+    hookCmd=$(yq eval -r ".${hookType}[$i]" "$configFile")
+    if [[ -z "$hookCmd" || "$hookCmd" == "null" ]]; then
+      echo.error "Error: ${hookType}[$i] is empty"
+      exit 1
+    fi
+    echo.grey "Run $hookType hook: $hookCmd '$repoDir'"
+    "$hookCmd" "$repoDir"
+  done
+}
+
+repo_name_from_url() {
+  local url="$1"
+  local baseName=""
+
+  baseName=$(basename "$url")
+  baseName="${baseName%.git}"
+
+  if [[ -z "$baseName" || "$baseName" == "/" || "$baseName" == "." ]]; then
+    echo.error "Error: unable to derive directory name from url '$url'"
+    exit 1
+  fi
+
+  echo "$baseName"
+}
+
+destination=$(yq eval -r '.destination // ""' "$configFile")
+if [[ -z "$destination" ]]; then
+  echo.error "Error: .destination is required"
+  exit 1
+fi
+
+mkdir -p "$destination"
+
+repoCount=$(yq eval '.repoList | length' "$configFile")
+if [[ "$repoCount" == "null" || "$repoCount" -eq 0 ]]; then
+  echo.error "Error: .repoList must contain at least one repository"
+  exit 1
+fi
+
+for ((idx = 0; idx < repoCount; idx++)); do
+  repoUrl=$(yq eval -r ".repoList[$idx].url // \"\"" "$configFile")
+  if [[ -z "$repoUrl" ]]; then
+    echo.error "Error: .repoList[$idx].url is required"
+    exit 1
+  fi
+
+  repoDirectory=$(yq eval -r ".repoList[$idx].directory // \"\"" "$configFile")
+  if [[ -z "$repoDirectory" ]]; then
+    repoDirectory=$(repo_name_from_url "$repoUrl")
+  fi
+
+  repoDirPath="$destination/$repoDirectory"
+
+  if [[ ! -d "$repoDirPath" ]]; then
+    echo.blue "Clone: $repoUrl -> $repoDirPath"
+    git clone "$repoUrl" "$repoDirPath"
+    run_hooks "postCreate" "$repoDirPath"
+    continue
+  fi
+
+  if [[ ! -d "$repoDirPath/.git" ]]; then
+    echo "Error: '$repoDirPath' exists but is not a git repository"
+    exit 1
+  fi
+
+  echo.blue "Pull: $repoDirPath"
+  git -C "$repoDirPath" pull --ff-only
+  run_hooks "postPull" "$repoDirPath"
+done

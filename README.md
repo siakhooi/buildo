@@ -40,6 +40,7 @@ source <(buildo-completion)
 - `buildo-docker-{build,build-list,images}`
 - `buildo-expiring`
 - `buildo-git-pull`
+- `buildo-git-fetch`
 - `buildo-github-release-latest-get`
 - `buildo-housekeep-by-age`
 - `buildo-jira-{issue,status}-get`

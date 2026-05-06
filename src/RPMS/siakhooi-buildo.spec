@@ -42,6 +42,7 @@ powertoys for builder
 %{_bindir}/buildo-docker-images
 %{_bindir}/buildo-expiring
 %{_bindir}/buildo-github-release-latest-get
+%{_bindir}/buildo-git-fetch
 %{_bindir}/buildo-git-pull
 %{_bindir}/buildo-housekeep-by-age
 %{_bindir}/buildo-message
