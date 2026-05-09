@@ -2,15 +2,27 @@
 
 set -euo pipefail
 usage() {
-  echo "Usage: $(basename "$0") [-h] configFile"
+  echo "Usage: $(basename "$0") [-h] [-c] [-p] configFile"
   echo " -h   show this help message"
+  echo " -c   create repositories if they do not exist only, don't pull updates for existing repositories"
+  echo " -p   pull updates for existing repositories only, don't create repositories if they do not exist"
 }
 
-while getopts "h" arg; do
+createRepo=true
+pullRepo=true
+while getopts "hcp" arg; do
   case $arg in
   h)
     usage
     exit 0
+    ;;
+  c)
+    createRepo=true
+    pullRepo=false
+    ;;
+  p)
+    createRepo=false
+    pullRepo=true
     ;;
   *)
     usage
@@ -102,9 +114,11 @@ for ((idx = 0; idx < repoCount; idx++)); do
   repoDirPath="$destination/$repoDirectory"
 
   if [[ ! -d "$repoDirPath" ]]; then
-    echo.blue "Clone: $repoUrl -> $repoDirPath"
-    git clone "$repoUrl" "$repoDirPath"
-    run_hooks "postCreate" "$repoDirPath"
+    if [[ "$createRepo" == true ]]; then
+      echo.blue "Clone: $repoUrl -> $repoDirPath"
+      git clone "$repoUrl" "$repoDirPath"
+      run_hooks "postCreate" "$repoDirPath"
+    fi
     continue
   fi
 
@@ -113,7 +127,9 @@ for ((idx = 0; idx < repoCount; idx++)); do
     exit 1
   fi
 
-  echo.blue "Pull: $repoDirPath"
-  git -C "$repoDirPath" pull --ff-only
-  run_hooks "postPull" "$repoDirPath"
+  if [[ "$pullRepo" == true ]]; then
+    echo.blue "Pull: $repoDirPath"
+    git -C "$repoDirPath" pull --ff-only
+    run_hooks "postPull" "$repoDirPath"
+  fi
 done
