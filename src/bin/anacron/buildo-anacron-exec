@@ -1,35 +1,44 @@
 #!/bin/bash
 
 # shellcheck disable=SC1091
-source  /usr/lib/buildo/buildo-init
+source /usr/lib/buildo/buildo-init
 
 usage() {
-  echo "Usage: $(basename "$0") [-h] [-l] job-identifier commands..."
-  echo " -l   highlight the result even is SUCCESS"
+	echo "Usage: $(basename "$0") [-h] [-l] job-identifier commands..."
+	echo " -l   highlight the result even is SUCCESS"
 }
 highlight=false
 while getopts "hl" arg; do
-  case $arg in
-    h)
-      usage
-      exit 0
-    ;;
-    l)
-      highlight=true
-    ;;
-    *)
-      usage
-      exit 1
-    ;;
-  esac
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	l)
+		highlight=true
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
 done
 shift $((OPTIND - 1))
 if [[ $# -lt 2 ]]; then
-  usage
-  exit 0
+	usage
+	exit 0
 fi
 
 readonly BUILDO_ANACRON_JOB_ID=$1
+
+if [[ -z "$BUILDO_ANACRON_JOB_ID" ]]; then
+	echo.error "BUILDO_ANACRON_JOB_ID is not set"
+	exit 1
+fi
+if [[ ! "$BUILDO_ANACRON_JOB_ID" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+	echo.error "invalid job-identifier: must be a non-empty alphanumeric name (may include . _ -)"
+	exit 1
+fi
 
 shift
 
@@ -42,38 +51,44 @@ BUILDO_ANACRON_JOB_HOME="$working_home/$BUILDO_ANACRON_JOB_ID"
 BUILDO_ANACRON_JOB_TIMESTAMP=$(date +%Y%m%d%H%M%S.%N)
 log_file=$BUILDO_ANACRON_JOB_HOME/${BUILDO_ANACRON_JOB_TIMESTAMP}.log
 
-mkdir -p "$BUILDO_ANACRON_JOB_HOME"
+mkdir -p "$BUILDO_ANACRON_JOB_HOME" || {
+	echo.error "Failed to create directory $BUILDO_ANACRON_JOB_HOME"
+	exit 1
+}
 
 export BUILDO_ANACRON_JOB_ID BUILDO_ANACRON_JOB_HOME BUILDO_ANACRON_JOB_TIMESTAMP
 
 readonly anacron_init_env=$BUILDO_HOME/anacron/init-environment.sh
 
 (
-  if [[ -f "$anacron_init_env" ]]; then
-    # shellcheck disable=SC1090
-    source "$anacron_init_env"
-  else
-    echo.debug "init-environment.sh: $anacron_init_env: not found."
-  fi
+	if [[ -f "$anacron_init_env" ]]; then
+		# shellcheck disable=SC1090
+		source "$anacron_init_env"
+	else
+		echo.debug "init-environment.sh: $anacron_init_env: not found."
+	fi
 
-  "$@"
+	"$@"
 
 ) >&"$log_file"
 exit_code=$?
 if [[ $exit_code == 0 ]]; then
-  if [[ $highlight == "true" ]]; then
-    result_text=$(echo.green -n "SUCCESS")
-    silent_on_success=false # always show if highlighted
-  else
-    result_text=$(echo.grey -n "SUCCESS")
-  fi
+	if [[ $highlight == "true" ]]; then
+		result_text=$(echo.green -n "SUCCESS")
+		silent_on_success=false # always show if highlighted
+	else
+		result_text=$(echo.grey -n "SUCCESS")
+	fi
 else
-  result_text=$(echo.red -n "FAILURE:$exit_code")
+	result_text=$(echo.red -n "FAILURE:$exit_code")
 fi
 
-anacron_chown=$(buildo-config .anacron.chown )
+anacron_chown=$(buildo-config .anacron.chown)
 if [[ -n $anacron_chown ]]; then
-  chown --changes -R "$anacron_chown" "$BUILDO_ANACRON_JOB_HOME"
+	if ! chown --changes -R "$anacron_chown" "$BUILDO_ANACRON_JOB_HOME"; then
+		echo.error "Failed to chown $BUILDO_ANACRON_JOB_HOME to $anacron_chown"
+		exit 1
+	fi
 fi
 
 if is-true "$silent_on_success" && [[ $exit_code == 0 ]]; then
@@ -81,7 +96,9 @@ if is-true "$silent_on_success" && [[ $exit_code == 0 ]]; then
 fi
 message_user=$(buildo-config .anacron.message_user)
 if [[ -n $message_user ]]; then
-  sudo -u "$message_user" buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
+	sudo -u "$message_user" buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
 else
-  buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
+	buildo-message -a "$BUILDO_ANACRON_JOB_ID" "[$result_text] $BUILDO_ANACRON_JOB_ID $log_file"
 fi
+
+exit "$exit_code"

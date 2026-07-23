@@ -1,20 +1,20 @@
 #!/bin/bash
 
 # shellcheck disable=SC1091
-source  /usr/lib/buildo/buildo-init
+source /usr/lib/buildo/buildo-init
 
 usage() {
   echo "Usage: $(basename "$0") [-h] job-identifier"
 }
 while getopts "h" arg; do
   case $arg in
-    h)
-      usage
-      exit 0
+  h)
+    usage
+    exit 0
     ;;
-    *)
-      usage
-      exit 1
+  *)
+    usage
+    exit 1
     ;;
   esac
 done
@@ -24,7 +24,17 @@ if [[ $# -ne 1 ]]; then
   exit 0
 fi
 job_id=$1
-working_home=$(buildo-config .anacron.working-home )
+
+if [[ -z "$job_id" ]]; then
+  echo.error "job_id is not set"
+  exit 1
+fi
+if [[ ! "$job_id" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+  echo.error "invalid job-identifier: must be a non-empty alphanumeric name (may include . _ -)"
+  exit 1
+fi
+
+working_home=$(buildo-config .anacron.working-home)
 working_home=${working_home:-$HOME/.buildo-anacron}
 readonly log_directory="$working_home/$job_id"
 
@@ -40,4 +50,3 @@ if [[ -z $latest_log_file ]]; then
 fi
 echo.blue "[$latest_log_file]"
 cat "$latest_log_file"
-

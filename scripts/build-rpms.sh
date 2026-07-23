@@ -1,45 +1,99 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+#
+# Description: Build an RPM package from the source files.
+# Usage: ./build-rpms.sh [options]
+#
 
-rm -rf ~/rpmbuild
-rpmdev-setuptree
+set -euo pipefail
 
+if [[ ! -f ./build.env ]]; then
+	echo "Error: build.env file not found. Please create it with the necessary variables."
+	exit 1
+fi
+# shellcheck disable=SC1091
+source ./build.env
+if [[ -z "${PACKAGE_NAME:-}" ]]; then
+	echo "Error: PACKAGE_NAME variable not set in build.env."
+	exit 1
+fi
+
+# ===== Constants =====
 readonly SOURCE=src
 readonly TARGET=~/rpmbuild/BUILD
 
-# Spec File
-cp $SOURCE/RPMS/siakhooi-buildo.spec ~/rpmbuild/SPECS
+# ===== Argument Parsing =====
+parse_args() {
+	while getopts "h" opt; do
+		case "${opt}" in
+		h)
+			usage
+			exit 0
+			;;
+		*)
+			usage
+			exit 1
+			;;
+		esac
+	done
+	shift $((OPTIND - 1))
+}
+# ===== Helper Functions =====
+clean_rpmbuild() {
+	rm -rf ~/rpmbuild
+}
+setup_rpmbuild_tree() {
+	rpmdev-setuptree
+}
+copy_spec_file() {
+	cp $SOURCE/RPMS/siakhooi-buildo.spec ~/rpmbuild/SPECS
+}
+copy_binary_files() {
+	mkdir -p $TARGET/usr/bin
+	find $SOURCE/bin -type f -exec cp -vr {} "$TARGET/usr/bin" \;
+	chmod 755 $TARGET/usr/bin/*
+}
+copy_lib_files() {
+	readonly build_lib_home=$TARGET/usr/lib/buildo
+	mkdir -p "$build_lib_home"
+	cp -vr $SOURCE/lib/* "$build_lib_home"
+	chmod 755 "$build_lib_home"/*
+}
+copy_license_file() {
+	cp -vf ./LICENSE "$TARGET/"
+}
+build_rpm_package() {
+	rpmlint ~/rpmbuild/SPECS/siakhooi-buildo.spec
+	rpmbuild -bb -vv ~/rpmbuild/SPECS/siakhooi-buildo.spec
+	cp -vf ~/rpmbuild/RPMS/noarch/siakhooi-buildo-*.rpm .
+}
+query_rpm_package() {
+	tree ~/rpmbuild/
+	rpm -ql ~/rpmbuild/RPMS/noarch/siakhooi-buildo-*.rpm
+}
+generate_rpm_checksums() {
+	rpm_file=$(basename "$(ls ./siakhooi-buildo-*.rpm)")
 
-# Binary File
-mkdir -p $TARGET/usr/bin
-find $SOURCE/bin -type f -exec cp -vr {} "$TARGET/usr/bin" \;
-chmod 755 $TARGET/usr/bin/*
+	sha256sum "$rpm_file" >"$rpm_file.sha256sum"
+	sha512sum "$rpm_file" >"$rpm_file.sha512sum"
+}
+# ===== Main Logic =====
+main() {
 
-# Lib File
-readonly build_lib_home=$TARGET/usr/lib/buildo
-mkdir -p "$build_lib_home"
-cp -vr $SOURCE/lib/* "$build_lib_home"
-chmod 755 "$build_lib_home"/*
+	parse_args "$@"
+	clean_rpmbuild
+	setup_rpmbuild_tree
 
-# # Share File
-# readonly build_share_home=$TARGET/usr/share/buildo
-# mkdir -p "$build_share_home"
-# cp -vr $SOURCE/share/* "$build_share_home"
-# chmod 644 "$build_share_home"/*
+	copy_spec_file
 
-# License
-cp -vf ./LICENSE "$TARGET/"
+	copy_binary_files
+	copy_lib_files
+	copy_license_file
 
-# build rpm file
-rpmlint ~/rpmbuild/SPECS/siakhooi-buildo.spec
-rpmbuild -bb -vv ~/rpmbuild/SPECS/siakhooi-buildo.spec
-cp -vf ~/rpmbuild/RPMS/noarch/siakhooi-buildo-*.rpm .
+	build_rpm_package
+	query_rpm_package
+	generate_rpm_checksums
 
-# query
-tree ~/rpmbuild/
-rpm -ql ~/rpmbuild/RPMS/noarch/siakhooi-buildo-*.rpm
+}
 
-rpm_file=$(basename "$(ls ./siakhooi-buildo-*.rpm)")
-
-sha256sum "$rpm_file" >"$rpm_file.sha256sum"
-sha512sum "$rpm_file" >"$rpm_file.sha512sum"
+# ===== Entrypoint =====
+main "$@"
