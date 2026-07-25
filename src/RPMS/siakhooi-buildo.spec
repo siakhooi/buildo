@@ -48,6 +48,7 @@ powertoys for builder
 %{_bindir}/buildo-message
 %{_bindir}/buildo-prepare
 %{_bindir}/buildo-proxy
+%{_bindir}/buildo-pyenv
 %{_bindir}/buildo-upgrade
 %{_bindir}/buildo-version
 %{_bindir}/buildo-jira-curl
