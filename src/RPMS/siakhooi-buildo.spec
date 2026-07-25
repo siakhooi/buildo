@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.39.0
+Version:        0.40.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -64,6 +64,9 @@ powertoys for builder
 %{_libdir}/buildo/buildo-init-git-functions
 
 %changelog
+* Sat Jul 25 2026 Siak Hooi <siakhooi@gmail.com> - 0.40.0
+- add buildo-pyenv
+
 * Sat May 9 2026 Siak Hooi <siakhooi@gmail.com> - 0.39.0
 - buildo-git-fetch to support -c,-p options
 
