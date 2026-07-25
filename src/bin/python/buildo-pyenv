@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-r pyenv_root_path] [-u] [-U] [-c] [-P]"
+	echo "-u                  pip to upgrade all packages"
+	echo "-U                  upgrade pip"
+	echo "-c                  pip cache purge"
+	echo "-P                  pyenv update"
+	# shellcheck disable=SC2016
+	echo '-r pyenv_root_path  path to pyenv_root, default to "$HOME/.pyenv"'
+}
+pyenv_root="$HOME/.pyenv"
+action=
+while getopts "hr:uUcPl" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	r)
+		pyenv_root="$OPTARG"
+		;;
+	u)
+		action=pip_upgrade_packages
+		;;
+	U)
+		action=pip_upgrade_pip
+		;;
+	c)
+		action=pip_cache_purge
+		;;
+	P)
+		action=pyenv_update
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]]; then
+	usage
+	exit 0
+fi
+
+if [[ -z $action ]]; then
+	echo.error "No action specified"
+	exit 1
+fi
+
+export PYENV_ROOT="$pyenv_root"
+export PATH="$pyenv_root/bin:$PATH"
+if command -v pyenv >/dev/null; then
+	eval "$(pyenv init -)"
+else
+	echo.warn "Pyenv is not installed."
+	exit 1
+fi
+
+if [[ $action == 'pip_upgrade_packages' ]]; then
+	pip --disable-pip-version-check list --outdated --format=json | jq -r .[].name | xargs -r -n1 pip install -U
+fi
+
+if [[ $action == 'pip_upgrade_pip' ]]; then
+	pip install --upgrade pip
+fi
+
+if [[ $action == 'pip_cache_purge' ]]; then
+	pip cache purge
+fi
+
+if [[ $action == 'pyenv_update' ]]; then
+	pyenv update
+fi
