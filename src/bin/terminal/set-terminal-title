@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 1 ]]; then
+  echo "Usage: $(basename "$0") title" >&2
+  exit 0
+fi
+
+readonly title=$1
+echo -ne "\033]0;$title\007"
