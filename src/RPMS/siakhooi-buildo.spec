@@ -60,6 +60,8 @@ powertoys for builder
 %{_bindir}/my-jira
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
+%{_bindir}/repo-copy
+%{_bindir}/repo-copy-completion
 %{_bindir}/set-terminal-title
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
