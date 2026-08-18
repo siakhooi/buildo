@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  echo "Usage: $(basename "$0") [-h] [-s suffix] repo-name..."
+}
+
+suffix=""
+while getopts "hs:" arg; do
+  case $arg in
+  h)
+    usage
+    exit 0
+    ;;
+  s)
+    suffix="$OPTARG"
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+  esac
+done
+shift $((OPTIND - 1))
+if [[ $# == 0 ]]; then
+  usage
+  exit 0
+fi
+
+mapfile -t repo_roots < <(buildo-config '."repo-copy".path[]')
+if [[ ${#repo_roots[@]} -eq 0 ]]; then
+  echo "No directories in repo-copy.path" >&2
+  exit 1
+fi
+
+while (("$#")); do
+  REPO=$1
+  found=""
+  for root in "${repo_roots[@]}"; do
+    [[ -n "$root" ]] || continue
+    if [[ -d "$root/$REPO" ]]; then
+      found="$root/$REPO"
+      break
+    fi
+  done
+  if [[ -n "$found" ]]; then
+    cp -R "$found/" ./"${REPO}${suffix}"
+  else
+    echo "Repo $REPO not exist"
+  fi
+  shift
+done
