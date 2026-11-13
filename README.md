@@ -53,6 +53,7 @@ source <(buildo-completion)
 - `docker-clean`
 - `docker-images`
 - `docker-stats`
+- `git-clone`
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`
