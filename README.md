@@ -50,6 +50,7 @@ source <(buildo-completion)
 - `buildo-proxy`
 - `buildo-upgrade`
 - `buildo-version`
+- `closeout`
 - `docker-clean`
 - `docker-images`
 - `docker-stats`
@@ -60,10 +61,11 @@ source <(buildo-completion)
 ### Init functions
 
 - `/usr/lib/buildo/buildo-init-git-functions`
-  - `buildo_shell_prompt_for_git_repo`
+- `buildo_shell_prompt_for_git_repo`
 
 ## Environments
 - `BUILDO_DOCKER_BUILD_HOME` - default `$BUILDO_HOME/docker-build`
+- `BUILDO_CLOSEOUT_BACKUP_ROOT_DIRECTORY` - default `$HOME/.buildo/closeout`
 
 ## Dependencies
 
