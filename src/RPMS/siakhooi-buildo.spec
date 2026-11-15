@@ -1,5 +1,5 @@
 Name:           siakhooi-buildo
-Version:        0.40.0
+Version:        0.41.0
 Release:        1%{?dist}
 Summary:        powertoys for builder
 
@@ -70,6 +70,14 @@ powertoys for builder
 %{_libdir}/buildo/git-clone-completion.sh
 
 %changelog
+
+* Sun Nov 15 2026 Siak Hooi <siakhooi@gmail.com> - 0.41.0
+- Feature: git-clone
+- Feature: closeout
+- Feature: repo-copy
+- Feature: set-terminal-title
+- fix bug: buildo-housekeep-by-age wrongly split file names with space
+
 * Sat Jul 25 2026 Siak Hooi <siakhooi@gmail.com> - 0.40.0
 - add buildo-pyenv
 
