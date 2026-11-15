@@ -57,6 +57,7 @@ powertoys for builder
 %{_bindir}/docker-clean
 %{_bindir}/docker-images
 %{_bindir}/docker-stats
+%{_bindir}/git-clone
 %{_bindir}/my-jira
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
