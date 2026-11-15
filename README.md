@@ -63,6 +63,7 @@ source <(buildo-completion)
 
 - `/usr/lib/buildo/buildo-init-git-functions`
 - `buildo_shell_prompt_for_git_repo`
+- `/usr/lib/buildo/git-clone-completion.sh`
 
 ## Environments
 - `BUILDO_DOCKER_BUILD_HOME` - default `$BUILDO_HOME/docker-build`
