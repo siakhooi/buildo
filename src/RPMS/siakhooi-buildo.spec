@@ -54,6 +54,7 @@ powertoys for builder
 %{_bindir}/buildo-jira-curl
 %{_bindir}/buildo-jira-issue-get
 %{_bindir}/buildo-jira-status-get
+%{_bindir}/closeout
 %{_bindir}/docker-clean
 %{_bindir}/docker-images
 %{_bindir}/docker-stats
