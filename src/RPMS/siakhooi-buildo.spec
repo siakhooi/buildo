@@ -58,6 +58,7 @@ powertoys for builder
 %{_bindir}/docker-clean
 %{_bindir}/docker-images
 %{_bindir}/docker-stats
+%{_bindir}/git-clone
 %{_bindir}/my-jira
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
@@ -66,6 +67,7 @@ powertoys for builder
 %{_bindir}/set-terminal-title
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
+%{_libdir}/buildo/git-clone-completion.sh
 
 %changelog
 * Sat Jul 25 2026 Siak Hooi <siakhooi@gmail.com> - 0.40.0
