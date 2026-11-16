@@ -25,7 +25,9 @@ sudo yum install siakhooi-buildo
 add the following to `~/.bashrc`
 
 ```bash
-source <(buildo-completion)
+source "/usr/lib/buildo/buildo-docker-build-completion.sh"
+source "/usr/lib/buildo/repo-copy-completion.sh"
+source "/usr/lib/buildo/git-clone-completion.sh"
 ```
 
 ## Binaries
@@ -34,7 +36,6 @@ source <(buildo-completion)
 - `buildo-auto-commit`
 - `buildo-backup`
 - `buildo-checker-{docker-usage,path-usage,space-left}`
-- `buildo-completion`
 - `buildo-config-{edit,set}`
 - `buildo-config`
 - `buildo-docker-{build,build-list,images}`
@@ -60,12 +61,15 @@ source <(buildo-completion)
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`
+- `repo-copy`
 
 ### Init functions
 
 - `/usr/lib/buildo/buildo-init-git-functions`
 - `buildo_shell_prompt_for_git_repo`
 - `/usr/lib/buildo/git-clone-completion.sh`
+- `/usr/lib/buildo/buildo-completion.sh`
+- `/usr/lib/buildo/repo-copy-completion.sh`
 
 ## Environments
 - `BUILDO_DOCKER_BUILD_HOME` - default `$BUILDO_HOME/docker-build`
