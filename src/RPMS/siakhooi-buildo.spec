@@ -32,7 +32,6 @@ powertoys for builder
 %{_bindir}/buildo-checker-docker-usage
 %{_bindir}/buildo-checker-path-usage
 %{_bindir}/buildo-checker-space-left
-%{_bindir}/buildo-completion
 %{_bindir}/buildo-config
 %{_bindir}/buildo-config-edit
 %{_bindir}/buildo-config-set
@@ -63,11 +62,12 @@ powertoys for builder
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
 %{_bindir}/repo-copy
-%{_bindir}/repo-copy-completion
 %{_bindir}/set-terminal-title
 %{_libdir}/buildo/buildo-init
 %{_libdir}/buildo/buildo-init-git-functions
 %{_libdir}/buildo/git-clone-completion.sh
+%{_libdir}/buildo/repo-copy-completion.sh
+%{_libdir}/buildo/buildo-docker-build-completion.sh
 
 %changelog
 
