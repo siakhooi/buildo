@@ -56,6 +56,7 @@ source <(buildo-completion)
 - `docker-stats`
 - `git-clone`
 - `git-clone-run`
+- `git-local-remote`
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`
