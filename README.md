@@ -57,8 +57,6 @@ source <(buildo-completion)
 - `git-clone`
 - `git-clone-run`
 - `git-local-remote`
-- `git-clone-run`
-- `git-local-remote`
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`
