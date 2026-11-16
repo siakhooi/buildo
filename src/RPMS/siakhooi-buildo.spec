@@ -61,6 +61,7 @@ powertoys for builder
 %{_bindir}/git-clone
 %{_bindir}/git-clone-run
 %{_bindir}/git-local-remote
+%{_bindir}/git-clone-run
 %{_bindir}/my-jira
 %{_bindir}/newman-collection
 %{_bindir}/pip-purge-all
