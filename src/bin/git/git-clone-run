@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	echo "Usage: $(basename "$0") [-h] [-c|-r] [-k] git_repo_url binary_path [-- args for binary...]"
+	echo "  Clone git_repo_url into a temporary directory, run binary_path (relative to repo root),"
+	echo "  then remove the clone by default."
+	echo ""
+	echo "  -c, -r          Remove the clone when finished (default)"
+	echo "  -k              Keep the clone directory (path printed on stderr)"
+	echo "  -h              Display this help message"
+}
+
+cleanup=true
+while getopts "hcrk" arg; do
+	case $arg in
+	h)
+		usage
+		exit 0
+		;;
+	c | r)
+		cleanup=true
+		;;
+	k)
+		cleanup=false
+		;;
+	*)
+		usage
+		exit 1
+		;;
+	esac
+done
+shift $((OPTIND - 1))
+
+if [[ $# -lt 2 ]]; then
+	usage
+	exit 1
+fi
+
+git_repo_url=$1
+binary_path=$2
+shift 2
+
+if [[ "$binary_path" == /* ]]; then
+	echo "Error: binary_path must be relative to the repository root." >&2
+	exit 1
+fi
+
+workdir=$(mktemp -d "${TMPDIR:-/tmp}/git-clone-run.XXXXXX")
+# shellcheck disable=SC2329
+cleanup_workdir() {
+	if [[ "$cleanup" == true ]]; then
+		rm -rf "$workdir"
+	else
+		echo "Kept clone at: $workdir" >&2
+	fi
+}
+trap cleanup_workdir EXIT
+
+git clone --quiet "$git_repo_url" "$workdir"
+
+binary="$workdir/$binary_path"
+if [[ ! -e "$binary" ]]; then
+	echo "Error: binary not found: $binary_path" >&2
+	exit 1
+fi
+if [[ ! -x "$binary" ]] && [[ -f "$binary" ]]; then
+	chmod +x "$binary"
+fi
+
+status=0
+"$binary" "$@" || status=$?
+exit "$status"
