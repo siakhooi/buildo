@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+usage() {
+    echo "Usage: $(basename "$0") [-h] [-i <repo-name>] [-u <repo-name>]"
+    echo "  -u <repo-name>   Upload the current git repository to the local remote repository"
+    echo "  -i <repo-name>   Initialize a new local remote repository"
+    echo "  -h               Display this help message"
+}
+action=""
+repo_name=""
+readonly repo_home="${GIT_LOCAL_REMOTE_HOME:-$HOME/.git-local-remote}"
+while getopts "hi:u:" arg; do
+    case $arg in
+    h)
+        usage
+        exit 0
+        ;;
+    i)
+        if [[ "$action" != "" ]] && [[ "$action" != "init" ]]; then
+            echo "Error: Only one action can be specified at a time."
+            usage
+            exit 1
+        fi
+        action="init"
+        repo_name="$OPTARG"
+        ;;
+    u)
+        if [[ "$action" != "" ]] && [[ "$action" != "upload" ]]; then
+            echo "Error: Only one action can be specified at a time."
+            usage
+            exit 1
+        fi
+        action="upload"
+        repo_name="$OPTARG"
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+    esac
+done
+shift $((OPTIND - 1))
+if [[ $# -ne 0 ]] || [[ "$action" == "" ]]; then
+    usage
+    exit 0
+fi
+
+if [[ "$action" == "init" ]]; then
+	set -x
+    git init --bare "$repo_home/$repo_name.git"
+elif [[ "$action" == "upload" ]]; then
+	if [[ -d "$repo_home/$repo_name.git" ]]; then
+        echo "Error: Repository '$repo_name' already exists at '$repo_home/$repo_name.git'."
+        exit 1
+    fi
+	if [[ ! -d "./.git" ]]; then
+        echo "Error: Current directory is not a git repository."
+        exit 1
+    fi
+    echo "Uploading repository '$repo_name' to '$repo_home/$repo_name.git'"
+	git clone --bare . "$repo_home/$repo_name.git"
+else
+    echo "Error: No valid action specified."
+    usage
+    exit 1
+fi
