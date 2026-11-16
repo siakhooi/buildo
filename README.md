@@ -56,6 +56,7 @@ source "/usr/lib/buildo/git-clone-completion.sh"
 - `docker-images`
 - `docker-stats`
 - `git-clone`
+- `git-clone-run`
 - `my-jira`
 - `newman-collection`
 - `pip-purge-all`
